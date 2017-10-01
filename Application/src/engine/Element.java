@@ -13,10 +13,10 @@ import java.util.HashMap;
  *
  * @author Ermengarde
  */
-public class Element {
-    private String name;
-    private HashMap<String, String> attributes;
-
+public abstract class Element {
+    protected String name;
+    protected HashMap<String, String> attributes;
+    
     public Element(String name, String attributes) {
         this.name = name;
         this.attributes = new HashMap<String, String>();
@@ -66,4 +66,26 @@ public class Element {
     public HashMap<String, String> getAttributes() {
         return attributes;
     }
+    
+    private double getHorizontalLength(){
+        return this.getMaxX() - this.getMinX();
+    }
+    
+    private double getVerticalLength(){
+        return this.getMaxY() - this.getMinY();
+    }
+    
+    public double getBoundingRectArea(){
+        if(this.getHorizontalLength()==0)return this.getVerticalLength();
+        if(this.getVerticalLength()==0)return this.getHorizontalLength();
+        return this.getHorizontalLength() * this.getVerticalLength();
+    }
+
+    public abstract double getMaxX();
+
+    public abstract double getMinX();
+
+    public abstract double getMaxY();
+
+    public abstract double getMinY();
 }

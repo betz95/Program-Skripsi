@@ -55,6 +55,9 @@ public class SVGParser {
             boolean inQuotes = false;
             char cur;
             for(int j=0;j<tags[i].length();j++){
+                if(j!=0 && tags[i].charAt(j-1)=='/' && tags[i].charAt(j)=='>'){
+                    break;
+                }
                 cur = tags[i].charAt(j);
                 if(flag){
                     if(cur != ' ' && cur != '\t'){
@@ -87,11 +90,28 @@ public class SVGParser {
                 }
             }
             if(isTargetElement(elementName)){
-                elements.add(new Element(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                if(elementName.equals("rect")){
+                    elements.add(new Rectangle(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("circle")){
+                    elements.add(new Circle(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("ellipse")){
+                    elements.add(new Ellipse(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("line")){
+                    elements.add(new Line(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("polygon")){
+                    elements.add(new Polygon(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("polyline")){
+                    elements.add(new Polyline(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
+                else if(elementName.equals("path")){
+                    elements.add(new Path(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                }
             }
-        }
-        for(int i=0;i<elements.size();i++){
-            System.out.println(elements.get(i).getName()+" "+elements.get(i).getAttributes());
         }
         return elements;
     }

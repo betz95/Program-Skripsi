@@ -18,6 +18,9 @@ public class GraphMaker {
     
     public GraphMaker(ArrayList<Element> elements){
         this.elements = elements;
+        for(int i=0;i<elements.size();i++){
+            System.out.println(this.elements.get(i).name + " " +this.elements.get(i).getBoundingRectArea());
+        }
     }
 
     public Graph getResult() {
