@@ -399,14 +399,15 @@ public class ApplicationGUI extends javax.swing.JFrame {
         int feedback = fileChooser.showOpenDialog(this);
         if(feedback == JFileChooser.APPROVE_OPTION){
             svgParser = new SVGParser(fileChooser.getSelectedFile());
-            graphMaker = new GraphMaker(svgParser.parseFile());
+            svgParser.parseFile();
+            graphMaker = new GraphMaker(svgParser.getElements());
             fileChooser = new JFileChooser(new File("C:/"));
             fileChooser.setFileFilter(new FileNameExtensionFilter("HTML files", "html"));
             fileChooser.setDialogTitle("Save Converted File");
             feedback = fileChooser.showSaveDialog(this);
             if(feedback == JFileChooser.APPROVE_OPTION){
                 try{
-                    graphDrawer = new GraphDrawer(graphMaker.getResult(), fileChooser.getSelectedFile());
+                    graphDrawer = new GraphDrawer(graphMaker.getResult(), svgParser.getUnprocessedElements(), fileChooser.getSelectedFile());
                     graphDrawer.draw();
                 }
                 catch(Exception e){

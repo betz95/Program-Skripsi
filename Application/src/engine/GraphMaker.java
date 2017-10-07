@@ -18,9 +18,6 @@ public class GraphMaker {
     
     public GraphMaker(ArrayList<Element> elements){
         this.elements = elements;
-        for(int i=0;i<elements.size();i++){
-            System.out.println(this.elements.get(i).name + " " +this.elements.get(i).getBoundingRectArea());
-        }
     }
 
     public Graph getResult() {
@@ -352,6 +349,9 @@ public class GraphMaker {
             Vertex first = null;
             for(i=0;i<numOfGroups;i++){
                 PathCommandGroup cmdGroup = groups.get(i);
+                if(i==0 && !cmdGroup.getCommand().equals("M")){
+                    break;
+                }
                 if(cmdGroup.getCommand().equals("M")){
                     first = makePathMoveTo(cmdGroup);
                     last = first;
@@ -363,13 +363,13 @@ public class GraphMaker {
                     last = makePathCubicCurveTo(last, cmdGroup);
                 }
                 else if(cmdGroup.getCommand().equals("S")){
-                    last = makePathSmoothCurveTo(last, cmdGroup);
+                    last = makePathSmoothCurveTo(last, cmdGroup, groups.get(i-1));
                 }
                 else if(cmdGroup.getCommand().equals("Q")){
                     last = makePathQuadraticCurveTo(last, cmdGroup);
                 }
                 else if(cmdGroup.getCommand().equals("T")){
-                    last = makePathCurveTo(last, cmdGroup);
+                    last = makePathCurveTo(last, cmdGroup, groups.get(i-1));
                 }
                 else if(cmdGroup.getCommand().equals("A")){
                     last = makePathEllipticalArc(last, cmdGroup);
@@ -413,8 +413,17 @@ public class GraphMaker {
         return endCurve;
     }
 
-    private Vertex makePathSmoothCurveTo(Vertex last, PathCommandGroup cmdGroup) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private Vertex makePathSmoothCurveTo(Vertex last, PathCommandGroup cmdGroup, PathCommandGroup prevCmdGroup) {
+        if(prevCmdGroup.getCommand().equals("C") || prevCmdGroup.getCommand().equals("S")){
+            Point2D.Double prevCtrlPoint = prevCmdGroup.getSecondLastCoordinate();
+            Point2D.Double curStart = prevCmdGroup.getLastCoordinate();
+            Point2D.Double curCtrlPoint = mirrorControlPoint(prevCtrlPoint, curStart);
+            cmdGroup.addFirstCoordinate(curCtrlPoint);
+            return makePathCubicCurveTo(last, cmdGroup);
+        }
+        else{
+            return makePathQuadraticCurveTo(last, cmdGroup);
+        }
     }
 
     private Vertex makePathQuadraticCurveTo(Vertex last, PathCommandGroup cmdGroup) {
@@ -436,8 +445,17 @@ public class GraphMaker {
         return endCurve;
     }
 
-    private Vertex makePathCurveTo(Vertex last, PathCommandGroup cmdGroup) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private Vertex makePathCurveTo(Vertex last, PathCommandGroup cmdGroup, PathCommandGroup prevCmdGroup) {
+        if(prevCmdGroup.getCommand().equals("Q") || prevCmdGroup.getCommand().equals("T")){
+            Point2D.Double prevCtrlPoint = prevCmdGroup.getSecondLastCoordinate();
+            Point2D.Double curStart = prevCmdGroup.getLastCoordinate();
+            Point2D.Double curCtrlPoint = mirrorControlPoint(prevCtrlPoint, curStart);
+            cmdGroup.addFirstCoordinate(curCtrlPoint);
+            return makePathQuadraticCurveTo(last, cmdGroup);
+        }
+        else{
+            return makePathLineTo(last, cmdGroup);
+        }
     }
 
     private Vertex makePathEllipticalArc(Vertex last, PathCommandGroup cmdGroup) {
@@ -459,6 +477,13 @@ public class GraphMaker {
         resY = Math.pow((1-t), 3) * controlPoints[0].y + 3 * t * Math.pow((1-t), 2) * controlPoints[1].y + 3 * Math.pow(t, 2) * (1-t) * controlPoints[2].y + Math.pow(t, 3) * controlPoints[3].y;
         return new Point2D.Double(resX, resY);
     }
+
+    private Point2D.Double mirrorControlPoint(Point2D.Double prevCtrlPoint, Point2D.Double curStart) {
+        Point2D.Double res = new Point2D.Double();
+        res.x = curStart.x - (prevCtrlPoint.x - curStart.x);
+        res.y = curStart.y - (prevCtrlPoint.y - curStart.y);
+        return res;
+    }
     
     class PathCommandGroup{
         private String command;
@@ -471,6 +496,14 @@ public class GraphMaker {
         
         public void addCoordinate(Point2D.Double newPoint){
             this.coordinates.add(newPoint);
+        }
+        
+        public void addFirstCoordinate(Point2D.Double newPoint){
+            this.coordinates.add(0, newPoint);
+        }
+        
+        public Point2D.Double getSecondLastCoordinate(){
+            return this.coordinates.get(this.coordinates.size()-2);
         }
         
         public Point2D.Double getLastCoordinate(){

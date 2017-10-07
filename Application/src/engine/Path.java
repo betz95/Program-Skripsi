@@ -52,14 +52,14 @@ public class Path extends Element {
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(Character.isLowerCase(curCommand.charAt(0))){
+                        if(currentProcessed+cumulativeX>maxX)maxX = currentProcessed+cumulativeX;  
+                    }
+                    else{
+                        if(currentProcessed>maxX)maxX = currentProcessed; 
+                    }
                     if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
                         cumulativeX += currentProcessed;
-                        if(Character.isLowerCase(curCommand.charAt(0))){
-                            if(cumulativeX>maxX)maxX = cumulativeX;  
-                        }
-                        else{
-                            if(currentProcessed>maxX)maxX = currentProcessed; 
-                        }
                     }
                     i+=2;
                 }
@@ -105,14 +105,14 @@ public class Path extends Element {
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(Character.isLowerCase(curCommand.charAt(0))){
+                        if(currentProcessed+cumulativeX<minX)minX = currentProcessed+cumulativeX;  
+                    }
+                    else{
+                        if(currentProcessed<minX)minX = currentProcessed; 
+                    }
                     if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
                         cumulativeX += currentProcessed;
-                        if(Character.isLowerCase(curCommand.charAt(0))){
-                            if(cumulativeX<minX)minX = cumulativeX;  
-                        }
-                        else{
-                            if(currentProcessed<minX)minX = currentProcessed; 
-                        }
                     }
                     i+=2;
                 }
@@ -158,14 +158,14 @@ public class Path extends Element {
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(Character.isLowerCase(curCommand.charAt(0))){
+                        if(currentProcessed2+cumulativeY>maxY)maxY = currentProcessed2+cumulativeY;  
+                    }
+                    else{
+                        if(currentProcessed2>maxY)maxY = currentProcessed2; 
+                    }
                     if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
                         cumulativeY += currentProcessed2;
-                        if(Character.isLowerCase(curCommand.charAt(0))){
-                            if(cumulativeY>maxY)maxY = cumulativeY;  
-                        }
-                        else{
-                            if(currentProcessed2>maxY)maxY = currentProcessed2; 
-                        }
                     }
                     i+=2;
                 }
@@ -211,14 +211,14 @@ public class Path extends Element {
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(Character.isLowerCase(curCommand.charAt(0))){
+                        if(currentProcessed2+cumulativeY<minY)minY = currentProcessed2+cumulativeY;  
+                    }
+                    else{
+                        if(currentProcessed2<minY)minY = currentProcessed2; 
+                    }
                     if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
                         cumulativeY += currentProcessed2;
-                        if(Character.isLowerCase(curCommand.charAt(0))){
-                            if(cumulativeY<minY)minY = cumulativeY;  
-                        }
-                        else{
-                            if(currentProcessed2<minY)minY = currentProcessed2; 
-                        }
                     }
                     i+=2;
                 }

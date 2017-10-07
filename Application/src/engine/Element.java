@@ -67,11 +67,11 @@ public abstract class Element {
         return attributes;
     }
     
-    private double getHorizontalLength(){
+    public double getHorizontalLength(){
         return this.getMaxX() - this.getMinX();
     }
     
-    private double getVerticalLength(){
+    public double getVerticalLength(){
         return this.getMaxY() - this.getMinY();
     }
     

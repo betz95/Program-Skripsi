@@ -18,10 +18,17 @@ import java.util.ArrayList;
  * @author Ermengarde
  */
 public class SVGParser {
+    public static final double AREA_LOWER_BOUND = 2500;
+    public static final double LENGTH_LOWER_BOUND = 100;
+    
     private File svgFile;
     private BufferedReader br;
+    private ArrayList<Element> elements;
+    private ArrayList<Element> unprocessedElements;
 
     public SVGParser(File svgFile) {
+        this.elements = new ArrayList<Element>();
+        this.unprocessedElements = new ArrayList<Element>();
         this.svgFile = svgFile;
         try{
             this.br = new BufferedReader(new FileReader(svgFile));
@@ -31,9 +38,7 @@ public class SVGParser {
         }
     }
     
-    public ArrayList<Element> parseFile(){
-        ArrayList<Element> elements = new ArrayList<Element>();
-        
+    public void parseFile(){
         //memindahkan isi file SVG ke String fileContent
         String fileContent = "";
         String buffer;
@@ -91,31 +96,151 @@ public class SVGParser {
             }
             if(isTargetElement(elementName)){
                 if(elementName.equals("rect")){
-                    elements.add(new Rectangle(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Rectangle rect = new Rectangle(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(rect.getHorizontalLength()==0 || rect.getVerticalLength()==0){
+                        if(rect.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(rect);
+                        }
+                        else{
+                            elements.add(rect);
+                        }
+                    }
+                    else{
+                        if(rect.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(rect);
+                        }
+                        else{
+                            elements.add(rect);
+                        }
+                    }
                 }
                 else if(elementName.equals("circle")){
-                    elements.add(new Circle(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Circle circle = new Circle(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(circle.getHorizontalLength()==0 || circle.getVerticalLength()==0){
+                        if(circle.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(circle);
+                        }
+                        else{
+                            elements.add(circle);
+                        }
+                    }
+                    else{
+                        if(circle.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(circle);
+                        }
+                        else{
+                            elements.add(circle);
+                        }
+                    }
                 }
                 else if(elementName.equals("ellipse")){
-                    elements.add(new Ellipse(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Ellipse ellipse = new Ellipse(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(ellipse.getHorizontalLength()==0 || ellipse.getVerticalLength()==0){
+                        if(ellipse.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(ellipse);
+                        }
+                        else{
+                            elements.add(ellipse);
+                        }
+                    }
+                    else{
+                        if(ellipse.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(ellipse);
+                        }
+                        else{
+                            elements.add(ellipse);
+                        }
+                    }
                 }
                 else if(elementName.equals("line")){
-                    elements.add(new Line(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Line line = new Line(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(line.getHorizontalLength()==0 || line.getVerticalLength()==0){
+                        if(line.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(line);
+                        }
+                        else{
+                            elements.add(line);
+                        }
+                    }
+                    else{
+                        if(line.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(line);
+                        }
+                        else{
+                            elements.add(line);
+                        }
+                    }
                 }
                 else if(elementName.equals("polygon")){
-                    elements.add(new Polygon(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Polygon polygon = new Polygon(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(polygon.getHorizontalLength()==0 || polygon.getVerticalLength()==0){
+                        if(polygon.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(polygon);
+                        }
+                        else{
+                            elements.add(polygon);
+                        }
+                    }
+                    else{
+                        if(polygon.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(polygon);
+                        }
+                        else{
+                            elements.add(polygon);
+                        }
+                    }
                 }
                 else if(elementName.equals("polyline")){
-                    elements.add(new Polyline(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Polyline polyline = new Polyline(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                    if(polyline.getHorizontalLength()==0 || polyline.getVerticalLength()==0){
+                        if(polyline.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(polyline);
+                        }
+                        else{
+                            elements.add(polyline);
+                        }
+                    }
+                    else{
+                        if(polyline.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(polyline);
+                        }
+                        else{
+                            elements.add(polyline);
+                        }
+                    }
                 }
                 else if(elementName.equals("path")){
-                    elements.add(new Path(elementName, elementAttributes.substring(0, elementAttributes.length()-2)));
+                    Path path = new Path(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                        System.out.println(path.getHorizontalLength()+" "+path.getVerticalLength());
+                    if(path.getHorizontalLength()==0 || path.getVerticalLength()==0){
+                        if(path.getBoundingRectArea()<LENGTH_LOWER_BOUND){
+                            unprocessedElements.add(path);
+                        }
+                        else{
+                            elements.add(path);
+                        }
+                    }
+                    else{
+                        if(path.getBoundingRectArea()<AREA_LOWER_BOUND){
+                            unprocessedElements.add(path);
+                        }
+                        else{
+                            elements.add(path);
+                        }
+                    }
                 }
             }
         }
+    }
+
+    public ArrayList<Element> getElements() {
         return elements;
     }
 
+    public ArrayList<Element> getUnprocessedElements() {
+        return unprocessedElements;
+    }
+    
     private boolean isTargetElement(String elementName) {
         if(elementName.equals("rect") || elementName.equals("circle")
                 || elementName.equals("ellipse")|| elementName.equals("line")
