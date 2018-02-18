@@ -6,6 +6,7 @@ import engine.SVGParser;
 import java.awt.Color;
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -401,8 +402,9 @@ public class ApplicationGUI extends javax.swing.JFrame {
             feedback = fileChooser.showSaveDialog(this);
             if(feedback == JFileChooser.APPROVE_OPTION){
                 try{
-                    graphDrawer = new GraphDrawer(graphMaker.getResult(), svgParser.getUnprocessedElements(), fileChooser.getSelectedFile());
+                    graphDrawer = new GraphDrawer(graphMaker.getResult(), svgParser.getUnprocessedElements(), fileChooser.getSelectedFile(), svgParser.getSvgWidth(), svgParser.getSvgHeight());
                     graphDrawer.draw();
+                    JOptionPane.showMessageDialog(this, "Berhasil Membuat Soal");
                 }
                 catch(Exception e){
                     e.printStackTrace();

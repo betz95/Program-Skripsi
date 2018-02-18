@@ -17,6 +17,8 @@ public class SVGParser {
     private BufferedReader br;
     private ArrayList<Element> elements;
     private ArrayList<Element> unprocessedElements;
+    private double svgWidth;
+    private double svgHeight;
 
     public SVGParser(File svgFile) {
         this.elements = new ArrayList<Element>();
@@ -87,7 +89,7 @@ public class SVGParser {
                 }
             }
             if(isTargetElement(elementName)){
-                if(elementName.equals("rect")){
+                if(elementName.equalsIgnoreCase("rect")){
                     Rectangle rect = new Rectangle(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(rect.getHorizontalLength()==0 || rect.getVerticalLength()==0){
                         if(rect.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -106,7 +108,7 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("circle")){
+                else if(elementName.equalsIgnoreCase("circle")){
                     Circle circle = new Circle(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(circle.getHorizontalLength()==0 || circle.getVerticalLength()==0){
                         if(circle.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -125,7 +127,7 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("ellipse")){
+                else if(elementName.equalsIgnoreCase("ellipse")){
                     Ellipse ellipse = new Ellipse(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(ellipse.getHorizontalLength()==0 || ellipse.getVerticalLength()==0){
                         if(ellipse.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -144,7 +146,7 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("line")){
+                else if(elementName.equalsIgnoreCase("line")){
                     Line line = new Line(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(line.getHorizontalLength()==0 || line.getVerticalLength()==0){
                         if(line.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -163,7 +165,7 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("polygon")){
+                else if(elementName.equalsIgnoreCase("polygon")){
                     Polygon polygon = new Polygon(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(polygon.getHorizontalLength()==0 || polygon.getVerticalLength()==0){
                         if(polygon.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -182,7 +184,7 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("polyline")){
+                else if(elementName.equalsIgnoreCase("polyline")){
                     Polyline polyline = new Polyline(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
                     if(polyline.getHorizontalLength()==0 || polyline.getVerticalLength()==0){
                         if(polyline.getBoundingRectArea()<LENGTH_LOWER_BOUND){
@@ -201,9 +203,8 @@ public class SVGParser {
                         }
                     }
                 }
-                else if(elementName.equals("path")){
+                else if(elementName.equalsIgnoreCase("path")){
                     Path path = new Path(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
-                        System.out.println(path.getHorizontalLength()+" "+path.getVerticalLength());
                     if(path.getHorizontalLength()==0 || path.getVerticalLength()==0){
                         if(path.getBoundingRectArea()<LENGTH_LOWER_BOUND){
                             unprocessedElements.add(path);
@@ -222,7 +223,28 @@ public class SVGParser {
                     }
                 }
             }
+            else if(elementName.equalsIgnoreCase("svg")){
+                SVG svg = new SVG(elementName, elementAttributes.substring(0, elementAttributes.length()-2));
+                this.svgWidth = Double.parseDouble(svg.getAttributes().get("width"));
+                this.svgHeight = Double.parseDouble(svg.getAttributes().get("height"));
+            }
         }
+    }
+
+    public double getSvgWidth() {
+        return svgWidth;
+    }
+
+    public void setSvgWidth(double svgWidth) {
+        this.svgWidth = svgWidth;
+    }
+
+    public double getSvgHeight() {
+        return svgHeight;
+    }
+
+    public void setSvgHeight(double svgHeight) {
+        this.svgHeight = svgHeight;
     }
 
     public ArrayList<Element> getElements() {
@@ -234,10 +256,10 @@ public class SVGParser {
     }
     
     private boolean isTargetElement(String elementName) {
-        if(elementName.equals("rect") || elementName.equals("circle")
-                || elementName.equals("ellipse")|| elementName.equals("line")
-                || elementName.equals("polygon") || elementName.equals("polyline")
-                || elementName.equals("path")){
+        if(elementName.equalsIgnoreCase("rect") || elementName.equalsIgnoreCase("circle")
+                || elementName.equalsIgnoreCase("ellipse")|| elementName.equalsIgnoreCase("line")
+                || elementName.equalsIgnoreCase("polygon") || elementName.equalsIgnoreCase("polyline")
+                || elementName.equalsIgnoreCase("path")){
             return true;
         }
         else return false;

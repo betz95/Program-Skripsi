@@ -1,5 +1,6 @@
 package engine;
 
+import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -17,11 +18,15 @@ public class GraphDrawer {
     private File destFile;
     private BufferedWriter bw;
     private ArrayList<Element> unprocessedElements;
+    private double svgWidth;
+    private double svgHeight;
     
-    public GraphDrawer(Graph graph, ArrayList<Element> unprocessedElements, File destFile){
+    public GraphDrawer(Graph graph, ArrayList<Element> unprocessedElements, File destFile, double svgWidth, double svgHeight){
         this.unprocessedElements = unprocessedElements;
         this.graph = graph;
         this.destFile = destFile;
+        this.svgWidth = svgWidth;
+        this.svgHeight = svgHeight;
         try{
             this.bw = new BufferedWriter(new FileWriter(this.destFile.getPath()));
         }
@@ -32,23 +37,33 @@ public class GraphDrawer {
     
     public void draw() throws IOException{
         if(this.graph != null){
+            this.graph.hierholzer();
             bw.write("<html>");
             bw.newLine();
             bw.write("<body>");
             bw.newLine();
-            bw.write("<svg height=\"2000\" width=\"2000\" style=\"padding:5;\">");
+            bw.write("<svg height=\""+this.svgHeight+"\" width=\""+this.svgWidth+"\" style=\"padding:5;\">");
             bw.newLine();
             int numVertices = graph.getVertices().size();
             HashSet<String> hs = new HashSet<String>(); 
-            for(int i=0;i<numVertices;i++){
-                Vertex cur = graph.getVertices().get(i);
+            for(Vertex cur: graph.getVertices()){
+                if(cur.getDisplayNumbers().size()!=0){
+                    String numbers = "";
+                    for(int i=0;i<cur.getDisplayNumbers().size();i++){
+                        if(i!=0)numbers+="/";
+                        numbers += cur.getDisplayNumbers().get(i);
+                    }
+                    hs.add("<text x=\"" + cur.getLocation().x + "\" y=\"" + (cur.getLocation().y - 15) + "\">"+numbers+"</text>");
+                }
                 hs.add("<circle cx=\"" + cur.getLocation().x + "\" cy=\"" + cur.getLocation().y + "\" r=\"5\" fill=\"black\" />");
             }
             int numEdges = graph.getEdges().size();
             for(int i=0;i<numEdges;i++){
                 Edge cur = graph.getEdges().get(i);
-                hs.add("<line x1=\"" + cur.getFrom().getLocation().x + "\" y1=\"" + cur.getFrom().getLocation().y + "\" "
-                        + "x2=\"" + cur.getTo().getLocation().x + "\" y2=\"" + cur.getTo().getLocation().y + "\" style=\"stroke:rgb(0,0,0);stroke-width:2\" />");
+                if(cur.isHelpLine()){
+                    hs.add("<line x1=\"" + cur.getFrom().getLocation().x + "\" y1=\"" + cur.getFrom().getLocation().y + "\" "
+                            + "x2=\"" + cur.getTo().getLocation().x + "\" y2=\"" + cur.getTo().getLocation().y + "\" style=\"stroke:rgb(0,0,0);stroke-width:2\" />");
+                }
             }
             int numUnprocessed = unprocessedElements.size();
             for(int i=0;i<numUnprocessed;i++){
