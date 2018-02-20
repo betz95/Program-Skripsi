@@ -229,11 +229,8 @@ public class Graph {
                     }
                 }
             }
-            if(this.adjList.get(best.getFrom().getNumber()).size()%2==1){
-                numOfOddVertices -= 1;
-            }
-            if(this.adjList.get(best.getTo().getNumber()).size()%2==1){
-                numOfOddVertices -= 1;
+            if(best.getFrom().getDegree()%2==1 && best.getTo().getDegree()%2==1){
+                numOfOddVertices -= 2;
             }
             makeHelpingLine(best);
         }
