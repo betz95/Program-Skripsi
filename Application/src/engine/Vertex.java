@@ -7,6 +7,8 @@ import java.util.ArrayList;
  * @author Albert - 2014730007
  */
 public class Vertex {
+    public static final double EPSILON = 0.0000001;
+    
     private int number;
     private Point2D.Double location;
     private int degree;
@@ -56,7 +58,7 @@ public class Vertex {
     public boolean equals(Object o){
         if(o instanceof Vertex){
             Vertex v = (Vertex)o;
-            if(v.location.x==this.location.x && v.location.y==this.location.y)return true;
+            if(Math.abs(v.location.x-this.location.x)<EPSILON && Math.abs(v.location.y-this.location.y)<EPSILON)return true;
             else return false;
         }
         else return false;
