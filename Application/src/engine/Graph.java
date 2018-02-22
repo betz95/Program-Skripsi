@@ -209,6 +209,7 @@ public class Graph {
     }
     
     public int makeEuler(){
+        printAdjList();
         int numOfOddVertices = 0;
         for(int i=0;i<this.vertices.size();i++){
             if(this.vertices.get(i).getDegree()%2==1){

@@ -400,6 +400,36 @@ public class GraphMaker {
                         cumulativeY += currentProcessed;
                         i++;
                     }
+                    else if(curCommand.equals("A")){
+                        double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                        double currentProcessed3 = Double.parseDouble(cmd[i+5]);
+                        double currentProcessed4 = Double.parseDouble(cmd[i+6]);
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed, currentProcessed2));
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                        groups.get(numOfGroups-1).setDegree(Double.parseDouble(cmd[i+2]));
+                        groups.get(numOfGroups-1).setLarArcFlag(Integer.parseInt(cmd[i+3]));
+                        groups.get(numOfGroups-1).setSweepFlag(Integer.parseInt(cmd[i+4]));
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed3, currentProcessed4));
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                        i+=7;
+                    }
+                    else if(curCommand.equals("a")){
+                        double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                        double currentProcessed3 = Double.parseDouble(cmd[i+5]);
+                        double currentProcessed4 = Double.parseDouble(cmd[i+6]);
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed + cumulativeX, currentProcessed2 + cumulativeY));
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                        groups.get(numOfGroups-1).setDegree(Double.parseDouble(cmd[i+2]));
+                        groups.get(numOfGroups-1).setLarArcFlag(Integer.parseInt(cmd[i+3]));
+                        groups.get(numOfGroups-1).setSweepFlag(Integer.parseInt(cmd[i+4]));
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed3 + cumulativeX, currentProcessed4 + cumulativeY));
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                        i+=7;
+                    }
                     else{
                         double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                         if(Character.isLowerCase(curCommand.charAt(0))){
@@ -531,7 +561,10 @@ public class GraphMaker {
     }
 
     private Vertex makePathEllipticalArc(Vertex last, PathCommandGroup cmdGroup) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Vertex endArc = new Vertex(cmdGroup.getLastCoordinate());
+        this.result.addVertex(endArc);
+        this.result.addEdge(new Edge(last, endArc));
+        return endArc;
     }
     
     private Point2D.Double getQuadraticBezierCurvesPoint(Point2D.Double controlPoints[], double t){
@@ -560,6 +593,10 @@ public class GraphMaker {
     class PathCommandGroup{
         private String command;
         private ArrayList<Point2D.Double> coordinates;
+        private double degree;
+        private int larArcFlag;
+        private int sweepFlag;
+        
         
         public PathCommandGroup(String command){
             this.command = command;
@@ -592,6 +629,38 @@ public class GraphMaker {
 
         public String getCommand() {
             return command;
+        }
+
+        public ArrayList<Point2D.Double> getCoordinates() {
+            return coordinates;
+        }
+
+        public void setCoordinates(ArrayList<Point2D.Double> coordinates) {
+            this.coordinates = coordinates;
+        }
+
+        public double getDegree() {
+            return degree;
+        }
+
+        public void setDegree(double degree) {
+            this.degree = degree;
+        }
+
+        public int getLarArcFlag() {
+            return larArcFlag;
+        }
+
+        public void setLarArcFlag(int larArcFlag) {
+            this.larArcFlag = larArcFlag;
+        }
+
+        public int getSweepFlag() {
+            return sweepFlag;
+        }
+
+        public void setSweepFlag(int sweepFlag) {
+            this.sweepFlag = sweepFlag;
         }
     }
 }
