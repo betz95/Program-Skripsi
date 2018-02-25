@@ -185,23 +185,23 @@ public class Graph {
             Vertex eTo = this.vertices.get(this.vertices.indexOf(edge.getTo()));
             this.adjList.get(eFrom.getNumber()).remove(eTo);
             this.adjList.get(eTo.getNumber()).remove(eFrom);
-            eFrom.setDegree(eFrom.getDegree()-1);
-            eTo.setDegree(eTo.getDegree()-1);
+            this.vertices.get(eFrom.getNumber()).setDegree(this.vertices.get(eFrom.getNumber()).getDegree()-1);
+            this.vertices.get(eTo.getNumber()).setDegree(this.vertices.get(eTo.getNumber()).getDegree()-1);
             edge.setHelpLine(true);
         }
     }
     
     private void makeHelpingLine(Edge e) {
         boolean isBridge = false;
-        if(checkBridge(e)){
+        if(checkBridge(e)!=-1){
             isBridge = true;
         }
         Vertex eFrom = e.getFrom();
         Vertex eTo = e.getTo();
         this.adjList.get(eFrom.getNumber()).remove(eTo);
         this.adjList.get(eTo.getNumber()).remove(eFrom);
-        eFrom.setDegree(eFrom.getDegree()-1);
-        eTo.setDegree(eTo.getDegree()-1);
+        this.vertices.get(eFrom.getNumber()).setDegree(this.vertices.get(eFrom.getNumber()).getDegree()-1);
+        this.vertices.get(eTo.getNumber()).setDegree(this.vertices.get(eTo.getNumber()).getDegree()-1);
         e.setHelpLine(true);
         if(isBridge){
             chooseLargerArea(e);
@@ -218,8 +218,9 @@ public class Graph {
         while(numOfOddVertices!=0 && numOfOddVertices!=2){
             Edge best = null;
             boolean first = true;
-            for(Edge e: this.edges){
-                if(!e.isHelpLine() && (e.getFrom().getDegree()%2==1 || e.getTo().getDegree()%2==1)){
+            for(int i=0;i<this.edges.size();i++){
+                Edge e = this.edges.get(i);
+                if(!e.isHelpLine() && (this.vertices.get(e.getFrom().getNumber()).getDegree()%2==1 || this.vertices.get(e.getTo().getNumber()).getDegree()%2==1)){
                     if(first){
                         best = e;
                         first = false;
@@ -229,7 +230,7 @@ public class Graph {
                     }
                 }
             }
-            if(best.getFrom().getDegree()%2==1 && best.getTo().getDegree()%2==1){
+            if(this.vertices.get(best.getFrom().getNumber()).getDegree()%2==1 && this.vertices.get(best.getTo().getNumber()).getDegree()%2==1){
                 numOfOddVertices -= 2;
             }
             makeHelpingLine(best);
@@ -238,22 +239,28 @@ public class Graph {
     }
     
     private Edge compareEdge(Edge e1, Edge e2){
-        boolean isBridgeE1 = checkBridge(e1);
-        boolean isBridgeE2 = checkBridge(e2);
+        int isBridgeE1 = checkBridge(e1);
+        int isBridgeE2 = checkBridge(e2);
         int numConnectedOddVertexE1 = 0;
         int numConnectedOddVertexE2 = 0;
         
-        if(e1.getFrom().getDegree()%2==1)numConnectedOddVertexE1++;
-        if(e1.getTo().getDegree()%2==1)numConnectedOddVertexE1++;
-        if(e2.getFrom().getDegree()%2==1)numConnectedOddVertexE2++;
-        if(e2.getTo().getDegree()%2==1)numConnectedOddVertexE2++;
+        if(this.vertices.get(e1.getFrom().getNumber()).getDegree()%2==1)numConnectedOddVertexE1++;
+        if(this.vertices.get(e1.getTo().getNumber()).getDegree()%2==1)numConnectedOddVertexE1++;
+        if(this.vertices.get(e2.getFrom().getNumber()).getDegree()%2==1)numConnectedOddVertexE2++;
+        if(this.vertices.get(e2.getTo().getNumber()).getDegree()%2==1)numConnectedOddVertexE2++;
         
         if(numConnectedOddVertexE1==2 && numConnectedOddVertexE2==2){
-            if(isBridgeE1){
+            if(isBridgeE1==-1 && isBridgeE2==-1){
+                return e1;
+            }
+            else if(isBridgeE1==-1 && isBridgeE2!=-1){
+                return e1;
+            }
+            else if(isBridgeE1!=-1 && isBridgeE2==-1){
                 return e2;
             }
             else{
-                return e1;
+                return (isBridgeE1>=isBridgeE2)? e1: e2;
             }
         }
         else if(numConnectedOddVertexE1==2 && numConnectedOddVertexE2!=2){
@@ -263,11 +270,17 @@ public class Graph {
             return e2;
         }
         else{
-            if(isBridgeE1){
+            if(isBridgeE1==-1 && isBridgeE2==-1){
+                return e1;
+            }
+            else if(isBridgeE1==-1 && isBridgeE2!=-1){
+                return e1;
+            }
+            else if(isBridgeE1!=-1 && isBridgeE2==-1){
                 return e2;
             }
             else{
-                return e1;
+                return (isBridgeE1>=isBridgeE2)? e1: e2;
             }
         }
     }
@@ -284,7 +297,7 @@ public class Graph {
         return count;
     }
     
-    private boolean checkBridge(Edge e) {
+    private int checkBridge(Edge e) {
         boolean visited[] = new boolean[this.vertices.size()];
         int before = dfsCount(e.getFrom().getNumber(), visited);
         this.adjList.get(e.getFrom().getNumber()).remove(e.getTo());
@@ -293,7 +306,12 @@ public class Graph {
         int after = dfsCount(e.getFrom().getNumber(), visited);
         this.adjList.get(e.getFrom().getNumber()).add(e.getTo());
         this.adjList.get(e.getTo().getNumber()).add(e.getFrom());
-        return !(before==after);
+        if(before==after){
+            return -1;
+        }
+        else{
+            return (after>before)? after: before;
+        }
     }
 
     /** Method for development only **/
