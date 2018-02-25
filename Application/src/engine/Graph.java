@@ -43,7 +43,6 @@ public class Graph {
     public void hierholzer(){
         int res = this.makeEuler(); //res = 0 able to make euler circuit, res = 2 able to make euler path
         ArrayList<Integer> eulerPath = new ArrayList<>();
-        boolean visited[] = new boolean[this.vertices.size()];
         int start = -1;
         if(res==2){
             for(int i=0;i<vertices.size();i++){
@@ -152,16 +151,18 @@ public class Graph {
         return this.adjList;
     }
     
-    private void dfsRemove(Vertex u, boolean visited[], ArrayList<Edge> smallerArea){
+    private void dfsRemove(ArrayList<Node>[] adjList, Vertex u, ArrayList<Edge> smallerArea){
         int cur = u.getNumber();
-        visited[cur] = true;
-        for(int i=0;i<adjList.get(cur).size();i++){
-            Vertex v = adjList.get(cur).get(i);
-            if(!visited[v.getNumber()]){
-                Edge e = new Edge(u, v);
+        for(int i=0;i<adjList[cur].size();i++){
+            Node v = adjList[cur].get(i);
+            if(!v.second){
+                v.second = true;
+                Edge e = new Edge(u, this.vertices.get(v.first));
                 e = edges.get(edges.indexOf(e));
-                smallerArea.add(e);
-                dfsRemove(v, visited, smallerArea);
+                if(!smallerArea.contains(e)){
+                    smallerArea.add(e);
+                }
+                dfsRemove(adjList, this.vertices.get(v.first), smallerArea);
             }
         }
     }
@@ -172,22 +173,21 @@ public class Graph {
         visited = new boolean[this.vertices.size()];
         int area2 = dfsCount(e.getTo().getNumber(), visited);
         ArrayList<Edge> smallerArea = new ArrayList<>();
+        ArrayList<Node>[] graph = copyGraph();
         if(area1>=area2){
-            visited = new boolean[this.vertices.size()];
-            dfsRemove(e.getTo(), visited, smallerArea);
+            dfsRemove(graph, e.getTo(), smallerArea);
         }
         else{
-            visited = new boolean[this.vertices.size()];
-            dfsRemove(e.getFrom(), visited, smallerArea);
+            dfsRemove(graph, e.getFrom(), smallerArea);
         }
         for(Edge edge: smallerArea){
-            Vertex eFrom = e.getFrom();
-            Vertex eTo = e.getTo();
+            Vertex eFrom = this.vertices.get(this.vertices.indexOf(edge.getFrom()));
+            Vertex eTo = this.vertices.get(this.vertices.indexOf(edge.getTo()));
             this.adjList.get(eFrom.getNumber()).remove(eTo);
             this.adjList.get(eTo.getNumber()).remove(eFrom);
             eFrom.setDegree(eFrom.getDegree()-1);
             eTo.setDegree(eTo.getDegree()-1);
-            e.setHelpLine(true);
+            edge.setHelpLine(true);
         }
     }
     
@@ -209,7 +209,6 @@ public class Graph {
     }
     
     public int makeEuler(){
-        printAdjList();
         int numOfOddVertices = 0;
         for(int i=0;i<this.vertices.size();i++){
             if(this.vertices.get(i).getDegree()%2==1){

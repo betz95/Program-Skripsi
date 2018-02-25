@@ -55,7 +55,9 @@ public class GraphDrawer {
                     }
                     hs.add("<text x=\"" + cur.getLocation().x + "\" y=\"" + (cur.getLocation().y - 15) + "\">"+numbers+"</text>");
                 }
-                hs.add("<circle cx=\"" + cur.getLocation().x + "\" cy=\"" + cur.getLocation().y + "\" r=\"5\" fill=\"black\" />");
+                if(cur.getDegree()>0){
+                    hs.add("<circle cx=\"" + cur.getLocation().x + "\" cy=\"" + cur.getLocation().y + "\" r=\"5\" fill=\"black\" />");
+                }
             }
             int numEdges = graph.getEdges().size();
             for(int i=0;i<numEdges;i++){
