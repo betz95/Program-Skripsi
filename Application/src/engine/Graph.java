@@ -58,8 +58,10 @@ public class Graph {
         ArrayList<Node>[] graph = copyGraph();
         doHierholzer(graph, start, eulerPath);
         eulerPath.add(start);
-        for(int i=0;i<eulerPath.size();i++){
-            this.vertices.get(eulerPath.get(i)).getDisplayNumbers().add(i+1);
+        if(eulerPath.size()>1){
+            for(int i=0;i<eulerPath.size();i++){
+                this.vertices.get(eulerPath.get(i)).getDisplayNumbers().add(i+1);
+            }
         }
     }
     
@@ -187,7 +189,7 @@ public class Graph {
             this.adjList.get(eTo.getNumber()).remove(eFrom);
             this.vertices.get(eFrom.getNumber()).setDegree(this.vertices.get(eFrom.getNumber()).getDegree()-1);
             this.vertices.get(eTo.getNumber()).setDegree(this.vertices.get(eTo.getNumber()).getDegree()-1);
-            edge.setHelpLine(true);
+            this.edges.get(this.edges.indexOf(edge)).setHelpLine(true);
         }
     }
     
@@ -202,7 +204,7 @@ public class Graph {
         this.adjList.get(eTo.getNumber()).remove(eFrom);
         this.vertices.get(eFrom.getNumber()).setDegree(this.vertices.get(eFrom.getNumber()).getDegree()-1);
         this.vertices.get(eTo.getNumber()).setDegree(this.vertices.get(eTo.getNumber()).getDegree()-1);
-        e.setHelpLine(true);
+        this.edges.get(this.edges.indexOf(e)).setHelpLine(true);
         if(isBridge){
             chooseLargerArea(e);
         }
@@ -215,6 +217,7 @@ public class Graph {
                 numOfOddVertices += 1;
             }
         }
+        printAdjList();
         while(numOfOddVertices!=0 && numOfOddVertices!=2){
             Edge best = null;
             boolean first = true;
@@ -235,6 +238,7 @@ public class Graph {
             }
             makeHelpingLine(best);
         }
+        printAdjList();
         return numOfOddVertices;
     }
     
@@ -318,8 +322,6 @@ public class Graph {
     private void printAdjList() {
         for(int i=0;i<adjList.size();i++){
             Vertex vi = this.vertices.get(i);
-            System.out.println("Vertex "+vi.getNumber()+" ("+vi.getLocation().x+", "+vi.getLocation().y+") Has Degree = "+vi.getDegree());
-            System.out.println("Neighbour of "+vi.getNumber()+":");
             for(int j=0;j<adjList.get(i).size();j++){
                 Vertex vj = adjList.get(i).get(j);
                 System.out.println("\t\t"+vj.getNumber()+" ("+vj.getLocation().x+", "+vj.getLocation().y+")");

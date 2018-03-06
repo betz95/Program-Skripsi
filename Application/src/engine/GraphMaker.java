@@ -382,21 +382,21 @@ public class GraphMaker {
                     double currentProcessed = Double.parseDouble(curProcessed);
                     if(curCommand.equals("H")){
                         groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed, groups.get(numOfGroups-2).getLastYCoordinate()));
-                        cumulativeX += currentProcessed;
+                        cumulativeX = currentProcessed;
                         i++;
                     }
                     else if(curCommand.equals("h")){
-                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed + cumulativeX, groups.get(numOfGroups-2).getLastYCoordinate() + cumulativeY));
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed + cumulativeX, cumulativeY));
                         cumulativeX += currentProcessed;
                         i++;
                     }
                     else if(curCommand.equals("V")){
                         groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(groups.get(numOfGroups-2).getLastXCoordinate(), currentProcessed));
-                        cumulativeY += currentProcessed;
+                        cumulativeY = currentProcessed;
                         i++;
                     }
                     else if(curCommand.equals("v")){
-                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(groups.get(numOfGroups-2).getLastXCoordinate() + cumulativeX, currentProcessed + cumulativeY));
+                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(cumulativeX, currentProcessed + cumulativeY));
                         cumulativeY += currentProcessed;
                         i++;
                     }
@@ -404,24 +404,22 @@ public class GraphMaker {
                         double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                         double currentProcessed3 = Double.parseDouble(cmd[i+5]);
                         double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed, currentProcessed2));
-                        cumulativeX += currentProcessed;
-                        cumulativeY += currentProcessed2;
+                        groups.get(numOfGroups-1).setRx(currentProcessed);
+                        groups.get(numOfGroups-1).setRy(currentProcessed2);
                         groups.get(numOfGroups-1).setDegree(Double.parseDouble(cmd[i+2]));
                         groups.get(numOfGroups-1).setLarArcFlag(Integer.parseInt(cmd[i+3]));
                         groups.get(numOfGroups-1).setSweepFlag(Integer.parseInt(cmd[i+4]));
                         groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed3, currentProcessed4));
-                        cumulativeX += currentProcessed3;
-                        cumulativeY += currentProcessed4;
+                        cumulativeX = currentProcessed3;
+                        cumulativeY = currentProcessed4;
                         i+=7;
                     }
                     else if(curCommand.equals("a")){
                         double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                         double currentProcessed3 = Double.parseDouble(cmd[i+5]);
                         double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                        groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed + cumulativeX, currentProcessed2 + cumulativeY));
-                        cumulativeX += currentProcessed;
-                        cumulativeY += currentProcessed2;
+                        groups.get(numOfGroups-1).setRx(currentProcessed);
+                        groups.get(numOfGroups-1).setRy(currentProcessed2);
                         groups.get(numOfGroups-1).setDegree(Double.parseDouble(cmd[i+2]));
                         groups.get(numOfGroups-1).setLarArcFlag(Integer.parseInt(cmd[i+3]));
                         groups.get(numOfGroups-1).setSweepFlag(Integer.parseInt(cmd[i+4]));
@@ -434,13 +432,17 @@ public class GraphMaker {
                         double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                         if(Character.isLowerCase(curCommand.charAt(0))){
                             groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed + cumulativeX, currentProcessed2 + cumulativeY));
+                            if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                                cumulativeX += currentProcessed;
+                                cumulativeY += currentProcessed2;
+                            }
                         }
                         else{
                             groups.get(numOfGroups-1).addCoordinate(new Point2D.Double(currentProcessed, currentProcessed2));
-                        }
-                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
-                            cumulativeX += currentProcessed;
-                            cumulativeY += currentProcessed2;
+                            if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                                cumulativeX = currentProcessed;
+                                cumulativeY = currentProcessed2;
+                            }
                         }
                         i+=2;
                     }
@@ -560,11 +562,280 @@ public class GraphMaker {
         }
     }
 
+    private void ensureRadii(Vertex last, PathCommandGroup cmdGroup){
+        if(cmdGroup.getCommand().equals("A")){
+            double x1 = last.getLocation().x;
+            double y1 = last.getLocation().y;
+            double x2 = cmdGroup.getLastCoordinate().x;
+            double y2 = cmdGroup.getLastCoordinate().y;
+            double rx = cmdGroup.getRx();
+            double ry = cmdGroup.getRy();
+            double varphi = cmdGroup.getDegree();
+            int fA = cmdGroup.getLarArcFlag();
+            int fS = cmdGroup.getSweepFlag();
+
+            double matrix[][] = new double[2][2];
+            matrix[0][0] = Math.cos(varphi);
+            matrix[0][1] = Math.sin(varphi);
+            matrix[1][0] = Math.sin(varphi) * -1;
+            matrix[1][1] = Math.cos(varphi);
+            Matrix m1 = new Matrix(matrix);
+            matrix = new double[2][1];
+            matrix[0][0] = (x1-x2)/2.0;
+            matrix[1][0] = (y1-y2)/2.0;
+            Matrix m2 = new Matrix(matrix);
+            Matrix coordinateA = MatrixMath.multiply(m1, m2);
+            double x1A = coordinateA.getMatrix()[0][0];
+            double y1A = coordinateA.getMatrix()[1][0];
+            
+            rx = Math.abs(rx);
+            ry = Math.abs(ry);
+            double radii = Math.pow(x1A, 2)/Math.pow(rx, 2) + Math.pow(y1A, 2)/Math.pow(ry, 2);
+            if(radii>1){
+                rx = Math.sqrt(radii) * rx;
+                ry = Math.sqrt(radii) * ry;
+            }
+            cmdGroup.setRx(rx);
+            cmdGroup.setRy(ry);
+        }
+    }
+    
     private Vertex makePathEllipticalArc(Vertex last, PathCommandGroup cmdGroup) {
+        ensureRadii(last, cmdGroup);
+        Matrix centerPoint = findArcCenterPoint(last, cmdGroup);
+        double rx = cmdGroup.getRx();
+        double ry = cmdGroup.getRy();
+        double varphi = cmdGroup.getDegree();
+        int fS = cmdGroup.getSweepFlag();
+        int fA = cmdGroup.getLarArcFlag();
+        double theta1 = findArcStartAngle(last, cmdGroup);
+        double deltaTheta = findArcDeltaTheta(last, cmdGroup);
+        double val = deltaTheta/4.0;
+        
+        Vertex leftMid, mid, rightMid;
+        double r[][] = new double[2][2];
+        r[0][0] = Math.cos(varphi);
+        r[0][1] = -1*Math.sin(varphi);
+        r[1][0] = Math.sin(varphi);
+        r[1][1] = Math.cos(varphi);
+        Matrix mR = new Matrix(r);
+        
+        //leftmid
+        double c[][] = new double[2][1];
+        c[0][0] = rx*Math.cos(theta1+(val));
+        c[1][0] = ry*Math.sin(theta1+(val));
+        Matrix mC = new Matrix(c);
+        Matrix res = MatrixMath.multiply(mR, mC);
+        res = MatrixMath.add(res, centerPoint);
+        leftMid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
+        //mid
+        c = new double[2][1];
+        c[0][0] = rx*Math.cos(theta1+(2*val));
+        c[1][0] = ry*Math.sin(theta1+(2*val));
+        mC = new Matrix(c);
+        res = MatrixMath.multiply(mR, mC);
+        res = MatrixMath.add(res, centerPoint);
+        mid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
+        //rightmid
+        c = new double[2][1];
+        c[0][0] = rx*Math.cos(theta1+(3*val));
+        c[1][0] = ry*Math.sin(theta1+(3*val));
+        mC = new Matrix(c);
+        res = MatrixMath.multiply(mR, mC);
+        res = MatrixMath.add(res, centerPoint);
+        rightMid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
+        
         Vertex endArc = new Vertex(cmdGroup.getLastCoordinate());
+        this.result.addVertex(leftMid);
+        this.result.addVertex(mid);
+        this.result.addVertex(rightMid);
         this.result.addVertex(endArc);
-        this.result.addEdge(new Edge(last, endArc));
+        this.result.addEdge(new Edge(last, leftMid));
+        this.result.addEdge(new Edge(leftMid, mid));
+        this.result.addEdge(new Edge(mid, rightMid));
+        this.result.addEdge(new Edge(rightMid, endArc));
+        
         return endArc;
+    }
+    
+    public double findArcDeltaTheta(Vertex last, PathCommandGroup cmdGroup){
+        double x1 = last.getLocation().x;
+        double y1 = last.getLocation().y;
+        double x2 = cmdGroup.getLastCoordinate().x;
+        double y2 = cmdGroup.getLastCoordinate().y;
+        double rx = cmdGroup.getRx();
+        double ry = cmdGroup.getRy();
+        double varphi = cmdGroup.getDegree();
+        int fA = cmdGroup.getLarArcFlag();
+        int fS = cmdGroup.getSweepFlag();
+        
+        double matrix[][] = new double[2][2];
+        matrix[0][0] = Math.cos(varphi);
+        matrix[0][1] = Math.sin(varphi);
+        matrix[1][0] = Math.sin(varphi) * -1;
+        matrix[1][1] = Math.cos(varphi);
+        Matrix m1 = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = (x1-x2)/2.0;
+        matrix[1][0] = (y1-y2)/2.0;
+        Matrix m2 = new Matrix(matrix);
+        Matrix coordinateA = MatrixMath.multiply(m1, m2);
+        double x1A = coordinateA.getMatrix()[0][0];
+        double y1A = coordinateA.getMatrix()[1][0];
+        
+        double val = Math.sqrt( ((rx*rx*ry*ry) - (rx*rx*y1A*y1A) - (ry*ry*x1A*x1A)) / ((rx*rx*y1A*y1A) + (ry*ry*x1A*x1A)) );
+        if(fA==fS){
+            val *= -1;
+        }
+        matrix = new double[2][1];
+        matrix[0][0] = rx*y1A/ry;
+        matrix[1][0] = -1*(ry*x1A/rx);
+        Matrix m3 = new Matrix(matrix);
+        Matrix centerPointA = MatrixMath.multiply(m3, val);
+        double cxA = centerPointA.getMatrix()[0][0];
+        double cyA = centerPointA.getMatrix()[1][0];
+        
+        
+        
+        
+        matrix = new double[2][1];
+        matrix[0][0] = (x1A - cxA)/rx;
+        matrix[1][0] = (y1A-cyA)/ry;
+        Matrix vU = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = ((-1*x1A)-cxA)/rx;
+        matrix[1][0] = ((-1*y1A)-cyA)/ry;
+        Matrix vV = new Matrix(matrix);
+        
+        double dotProduct = MatrixMath.dotProduct(vU, vV);
+        double vULength = MatrixMath.vectorLength(vU);
+        double vVLength = MatrixMath.vectorLength(vV);
+        double result = Math.acos(dotProduct / vULength * vVLength);
+        
+        if((vU.getMatrix()[0][0] * vV.getMatrix()[1][0] - vU.getMatrix()[1][0] * vV.getMatrix()[0][0])<0){
+            result *= -1;
+        }
+        
+        //mod 360
+        if(fS==0 && result>0){
+            result -= 2*Math.PI;
+        }
+        else if(fS==1 && result<0){
+            result += 2*Math.PI;
+        }
+        result %= 2*Math.PI;
+        
+        return result;
+    }
+    
+    private double findArcStartAngle(Vertex last, PathCommandGroup cmdGroup){
+        double x1 = last.getLocation().x;
+        double y1 = last.getLocation().y;
+        double x2 = cmdGroup.getLastCoordinate().x;
+        double y2 = cmdGroup.getLastCoordinate().y;
+        double rx = cmdGroup.getRx();
+        double ry = cmdGroup.getRy();
+        double varphi = cmdGroup.getDegree();
+        int fA = cmdGroup.getLarArcFlag();
+        int fS = cmdGroup.getSweepFlag();
+        
+        double matrix[][] = new double[2][2];
+        matrix[0][0] = Math.cos(varphi);
+        matrix[0][1] = Math.sin(varphi);
+        matrix[1][0] = Math.sin(varphi) * -1;
+        matrix[1][1] = Math.cos(varphi);
+        Matrix m1 = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = (x1-x2)/2.0;
+        matrix[1][0] = (y1-y2)/2.0;
+        Matrix m2 = new Matrix(matrix);
+        Matrix coordinateA = MatrixMath.multiply(m1, m2);
+        double x1A = coordinateA.getMatrix()[0][0];
+        double y1A = coordinateA.getMatrix()[1][0];
+        
+        double val = Math.sqrt( ((rx*rx*ry*ry) - (rx*rx*y1A*y1A) - (ry*ry*x1A*x1A)) / ((rx*rx*y1A*y1A) + (ry*ry*x1A*x1A)) );
+        if(fA==fS){
+            val *= -1;
+        }
+        matrix = new double[2][1];
+        matrix[0][0] = rx*y1A/ry;
+        matrix[1][0] = -1*(ry*x1A/rx);
+        Matrix m3 = new Matrix(matrix);
+        Matrix centerPointA = MatrixMath.multiply(m3, val);
+        double cxA = centerPointA.getMatrix()[0][0];
+        double cyA = centerPointA.getMatrix()[1][0];
+        
+        matrix = new double[2][1];
+        matrix[0][0] = 1;
+        matrix[1][0] = 0;
+        Matrix vU = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = (x1A-cxA)/rx;
+        matrix[1][0] = (y1A-cyA)/ry;
+        Matrix vV = new Matrix(matrix);
+        
+        double dotProduct = MatrixMath.dotProduct(vU, vV);
+        double vULength = MatrixMath.vectorLength(vU);
+        double vVLength = MatrixMath.vectorLength(vV);
+        double result = Math.acos(dotProduct / vULength * vVLength);
+        
+        if((vU.getMatrix()[0][0] * vV.getMatrix()[1][0] - vU.getMatrix()[1][0] * vV.getMatrix()[0][0])<0){
+            result *= -1;
+        }
+        return result;
+    }
+    
+    private Matrix findArcCenterPoint(Vertex last, PathCommandGroup cmdGroup){
+        double x1 = last.getLocation().x;
+        double y1 = last.getLocation().y;
+        double x2 = cmdGroup.getLastCoordinate().x;
+        double y2 = cmdGroup.getLastCoordinate().y;
+        double rx = cmdGroup.getRx();
+        double ry = cmdGroup.getRy();
+        double varphi = cmdGroup.getDegree();
+        int fA = cmdGroup.getLarArcFlag();
+        int fS = cmdGroup.getSweepFlag();
+        
+        //find x1' and y1'
+        double matrix[][] = new double[2][2];
+        matrix[0][0] = Math.cos(varphi);
+        matrix[0][1] = Math.sin(varphi);
+        matrix[1][0] = Math.sin(varphi) * -1;
+        matrix[1][1] = Math.cos(varphi);
+        Matrix m1 = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = (x1-x2)/2.0;
+        matrix[1][0] = (y1-y2)/2.0;
+        Matrix m2 = new Matrix(matrix);
+        Matrix coordinateA = MatrixMath.multiply(m1, m2);
+        double x1A = coordinateA.getMatrix()[0][0];
+        double y1A = coordinateA.getMatrix()[1][0];
+        
+        //find cx' and cy'
+        double val = Math.sqrt( ((rx*rx*ry*ry) - (rx*rx*y1A*y1A) - (ry*ry*x1A*x1A)) / ((rx*rx*y1A*y1A) + (ry*ry*x1A*x1A)) );
+        if(fA==fS){
+            val *= -1;
+        }
+        matrix = new double[2][1];
+        matrix[0][0] = rx*y1A/ry;
+        matrix[1][0] = -1*(ry*x1A/rx);
+        Matrix m3 = new Matrix(matrix);
+        Matrix centerPointA = MatrixMath.multiply(m3, val);
+        
+        //find center points
+        matrix = new double[2][2];
+        matrix[0][0] = Math.cos(varphi);
+        matrix[0][1] = -1 * Math.sin(varphi);
+        matrix[1][0] = Math.sin(varphi);
+        matrix[1][1] = Math.cos(varphi);
+        Matrix m4 = new Matrix(matrix);
+        matrix = new double[2][1];
+        matrix[0][0] = (x1+x2)/2.0;
+        matrix[1][0] = (y1+y2)/2.0;
+        Matrix m5 = new Matrix(matrix);
+        Matrix centerPoint = MatrixMath.multiply(m4, centerPointA);
+        centerPoint = MatrixMath.add(centerPoint, m5);
+        return centerPoint;
     }
     
     private Point2D.Double getQuadraticBezierCurvesPoint(Point2D.Double controlPoints[], double t){
@@ -596,11 +867,29 @@ public class GraphMaker {
         private double degree;
         private int larArcFlag;
         private int sweepFlag;
+        private double rx;
+        private double ry;
         
         
         public PathCommandGroup(String command){
             this.command = command;
             this.coordinates = new ArrayList<Point2D.Double>();
+        }
+
+        public double getRx() {
+            return rx;
+        }
+
+        public void setRx(double rx) {
+            this.rx = rx;
+        }
+
+        public double getRy() {
+            return ry;
+        }
+
+        public void setRy(double ry) {
+            this.ry = ry;
         }
         
         public void addCoordinate(Point2D.Double newPoint){
@@ -644,7 +933,7 @@ public class GraphMaker {
         }
 
         public void setDegree(double degree) {
-            this.degree = degree;
+            this.degree = Math.toRadians(degree);
         }
 
         public int getLarArcFlag() {

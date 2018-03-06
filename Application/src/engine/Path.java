@@ -9,7 +9,7 @@ public class Path extends Element {
     public Path(String name, String attributes) {
         super(name, attributes);
     }
-
+   
     @Override
     public double getMaxX() {
         String cmd[] = this.attributes.get("d").split("\\s+");
@@ -30,7 +30,7 @@ public class Path extends Element {
             else{
                 double currentProcessed = Double.parseDouble(curProcessed);
                 if(curCommand.equals("H")){
-                    cumulativeX += currentProcessed;
+                    cumulativeX = currentProcessed;
                     if(currentProcessed>maxX)maxX = currentProcessed;
                     i++;
                 }
@@ -44,29 +44,30 @@ public class Path extends Element {
                 }
                 else if(curCommand.equals("A")){
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
-                    cumulativeX += currentProcessed;
-                    if(currentProcessed>maxX)maxX = currentProcessed;
-                    cumulativeX += currentProcessed3;
-                    if(currentProcessed3>maxX)maxX = currentProcessed3;
+                    cumulativeX = currentProcessed3;
+                    //make sure draw arc
+                    maxX = Double.MAX_VALUE;
                     i+=7;
                 }
                 else if(curCommand.equals("a")){
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
-                    cumulativeX += currentProcessed;
-                    if(cumulativeX>maxX)maxX = cumulativeX;
                     cumulativeX += currentProcessed3;
-                    if(cumulativeX>maxX)maxX = cumulativeX;
+                    //make sure draw arc
+                    maxX = Double.MAX_VALUE;
                     i+=7;
                 }
                 else{
                     if(Character.isLowerCase(curCommand.charAt(0))){
                         if(currentProcessed+cumulativeX>maxX)maxX = currentProcessed+cumulativeX;  
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeX += currentProcessed;
+                        }
                     }
                     else{
                         if(currentProcessed>maxX)maxX = currentProcessed; 
-                    }
-                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
-                        cumulativeX += currentProcessed;
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeX = currentProcessed;
+                        }
                     }
                     i+=2;
                 }
@@ -95,7 +96,7 @@ public class Path extends Element {
             else{
                 double currentProcessed = Double.parseDouble(curProcessed);
                 if(curCommand.equals("H")){
-                    cumulativeX += currentProcessed;
+                    cumulativeX = currentProcessed;
                     if(currentProcessed<minX)minX = currentProcessed;
                     i++;
                 }
@@ -109,29 +110,30 @@ public class Path extends Element {
                 }
                 else if(curCommand.equals("A")){
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
-                    cumulativeX += currentProcessed;
-                    if(currentProcessed<minX)minX = currentProcessed;
-                    cumulativeX += currentProcessed3;
-                    if(currentProcessed3<minX)minX = currentProcessed3;
+                    cumulativeX = currentProcessed3;
+                    //make sure draw arc
+                    minX = Double.MIN_VALUE;
                     i+=7;
                 }
                 else if(curCommand.equals("a")){
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
-                    cumulativeX += currentProcessed;
-                    if(cumulativeX<minX)minX = cumulativeX;
                     cumulativeX += currentProcessed3;
-                    if(cumulativeX<minX)minX = cumulativeX;
+                    //make sure draw arc
+                    minX = Double.MIN_VALUE;
                     i+=7;
                 }
                 else{
                     if(Character.isLowerCase(curCommand.charAt(0))){
-                        if(currentProcessed+cumulativeX<minX)minX = currentProcessed+cumulativeX;  
+                        if(currentProcessed+cumulativeX<minX)minX = currentProcessed+cumulativeX;
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeX += currentProcessed;
+                        }  
                     }
                     else{
                         if(currentProcessed<minX)minX = currentProcessed; 
-                    }
-                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
-                        cumulativeX += currentProcessed;
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeX = currentProcessed;
+                        } 
                     }
                     i+=2;
                 }
@@ -163,7 +165,7 @@ public class Path extends Element {
                     i++;
                 }
                 else if(curCommand.equals("V")){
-                    cumulativeY += currentProcessed;
+                    cumulativeY = currentProcessed;
                     if(currentProcessed>maxY)maxY = currentProcessed;
                     i++;
                 }
@@ -175,32 +177,33 @@ public class Path extends Element {
                 else if(curCommand.equals("A")){
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                    cumulativeY += currentProcessed2;
-                    if(currentProcessed2>maxY)maxY = currentProcessed2;
-                    cumulativeY += currentProcessed4;
-                    if(currentProcessed4>maxY)maxY = currentProcessed4;
+                    cumulativeY = currentProcessed4;
+                    //make sure draw arc
+                    maxY = Double.MAX_VALUE;
                     i+=7;
                 }
                 else if(curCommand.equals("a")){
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
                     double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                    cumulativeY += currentProcessed2;
-                    if(cumulativeY>maxY)maxY = cumulativeY;
                     cumulativeY += currentProcessed4;
-                    if(cumulativeY>maxY)maxY = cumulativeY;
+                    //make sure draw arc
+                    maxY = Double.MAX_VALUE;
                     i+=7;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     if(Character.isLowerCase(curCommand.charAt(0))){
                         if(currentProcessed2+cumulativeY>maxY)maxY = currentProcessed2+cumulativeY;  
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeY += currentProcessed2;
+                        }
                     }
                     else{
                         if(currentProcessed2>maxY)maxY = currentProcessed2; 
-                    }
-                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
-                        cumulativeY += currentProcessed2;
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeY = currentProcessed2;
+                        }
                     }
                     i+=2;
                 }
@@ -219,7 +222,7 @@ public class Path extends Element {
         int numOfGroups = 0;
         int i = 0;
         double minY = Double.MAX_VALUE;
-        while(i<cmdLen-1){
+        while(i<cmdLen){
             curProcessed = cmd[i];
             if(Character.isAlphabetic(curProcessed.charAt(0))){
                 curCommand = cmd[i];
@@ -232,7 +235,7 @@ public class Path extends Element {
                     i++;
                 }
                 else if(curCommand.equals("V")){
-                    cumulativeY += currentProcessed;
+                    cumulativeY = currentProcessed;
                     if(currentProcessed<minY)minY = currentProcessed;
                     i++;
                 }
@@ -244,32 +247,33 @@ public class Path extends Element {
                 else if(curCommand.equals("A")){
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                    cumulativeY += currentProcessed2;
-                    if(currentProcessed2<minY)minY = currentProcessed2;
-                    cumulativeY += currentProcessed4;
-                    if(currentProcessed4<minY)minY = currentProcessed4;
+                    cumulativeY = currentProcessed4;
+                    //make sure draw arc
+                    minY = Double.MIN_VALUE;
                     i+=7;
                 }
                 else if(curCommand.equals("a")){
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     double currentProcessed3 = Double.parseDouble(cmd[i+5]);
                     double currentProcessed4 = Double.parseDouble(cmd[i+6]);
-                    cumulativeY += currentProcessed2;
-                    if(cumulativeY<minY)minY = cumulativeY;
                     cumulativeY += currentProcessed4;
-                    if(cumulativeY<minY)minY = cumulativeY;
+                    //make sure draw arc
+                    minY = Double.MIN_VALUE;
                     i+=7;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
                     if(Character.isLowerCase(curCommand.charAt(0))){
                         if(currentProcessed2+cumulativeY<minY)minY = currentProcessed2+cumulativeY;  
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeY += currentProcessed2;
+                        }
                     }
                     else{
                         if(currentProcessed2<minY)minY = currentProcessed2; 
-                    }
-                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
-                        cumulativeY += currentProcessed2;
+                        if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                            cumulativeY = currentProcessed2;
+                        }
                     }
                     i+=2;
                 }
