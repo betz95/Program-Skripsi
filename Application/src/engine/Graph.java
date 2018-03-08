@@ -217,7 +217,6 @@ public class Graph {
                 numOfOddVertices += 1;
             }
         }
-        printAdjList();
         while(numOfOddVertices!=0 && numOfOddVertices!=2){
             Edge best = null;
             boolean first = true;
@@ -238,7 +237,6 @@ public class Graph {
             }
             makeHelpingLine(best);
         }
-        printAdjList();
         return numOfOddVertices;
     }
     
@@ -322,9 +320,11 @@ public class Graph {
     private void printAdjList() {
         for(int i=0;i<adjList.size();i++){
             Vertex vi = this.vertices.get(i);
+            System.out.println("Vertex "+vi.getNumber()+" Has Degree "+vi.getDegree()+" Located At "+vi.getLocation());
+            System.out.println("Neighbour of Vertex "+vi.getNumber());
             for(int j=0;j<adjList.get(i).size();j++){
                 Vertex vj = adjList.get(i).get(j);
-                System.out.println("\t\t"+vj.getNumber()+" ("+vj.getLocation().x+", "+vj.getLocation().y+")");
+                System.out.println("\t\t"+vj.getNumber()+" "+vj.getLocation());
             }
         }
     }
