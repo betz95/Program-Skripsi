@@ -610,51 +610,33 @@ public class GraphMaker {
         int fA = cmdGroup.getLarArcFlag();
         double theta1 = findArcStartAngle(last, cmdGroup);
         double deltaTheta = findArcDeltaTheta(last, cmdGroup);
-        double val = deltaTheta/4.0;
-        
-        Vertex leftMid, mid, rightMid;
+        int parts = (int)Math.abs((Math.toDegrees(deltaTheta)/45));
+        double val = deltaTheta/parts;
         double r[][] = new double[2][2];
         r[0][0] = Math.cos(varphi);
         r[0][1] = -1*Math.sin(varphi);
         r[1][0] = Math.sin(varphi);
         r[1][1] = Math.cos(varphi);
         Matrix mR = new Matrix(r);
-        
-        //leftmid
-        double c[][] = new double[2][1];
-        c[0][0] = rx*Math.cos(theta1+(val));
-        c[1][0] = ry*Math.sin(theta1+(val));
-        Matrix mC = new Matrix(c);
-        Matrix res = MatrixMath.multiply(mR, mC);
-        res = MatrixMath.add(res, centerPoint);
-        leftMid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
-        //mid
-        c = new double[2][1];
-        c[0][0] = rx*Math.cos(theta1+(2*val));
-        c[1][0] = ry*Math.sin(theta1+(2*val));
-        mC = new Matrix(c);
-        res = MatrixMath.multiply(mR, mC);
-        res = MatrixMath.add(res, centerPoint);
-        mid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
-        //rightmid
-        c = new double[2][1];
-        c[0][0] = rx*Math.cos(theta1+(3*val));
-        c[1][0] = ry*Math.sin(theta1+(3*val));
-        mC = new Matrix(c);
-        res = MatrixMath.multiply(mR, mC);
-        res = MatrixMath.add(res, centerPoint);
-        rightMid = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
-        
+
+        Vertex u = last;
+        Vertex v = last;
+        double c[][];
+        for(int i=1;i<=parts-1;i++){
+            c = new double[2][1];
+            c[0][0] = rx*Math.cos(theta1+(i*val));
+            c[1][0] = ry*Math.sin(theta1+(i*val));
+            Matrix mC = new Matrix(c);
+            Matrix res = MatrixMath.multiply(mR, mC);
+            res = MatrixMath.add(res, centerPoint);
+            v = new Vertex(new Point2D.Double(res.getMatrix()[0][0], res.getMatrix()[1][0]));
+            this.result.addVertex(v);
+            this.result.addEdge(new Edge(u, v));
+            u = v;
+        }
         Vertex endArc = new Vertex(cmdGroup.getLastCoordinate());
-        this.result.addVertex(leftMid);
-        this.result.addVertex(mid);
-        this.result.addVertex(rightMid);
         this.result.addVertex(endArc);
-        this.result.addEdge(new Edge(last, leftMid));
-        this.result.addEdge(new Edge(leftMid, mid));
-        this.result.addEdge(new Edge(mid, rightMid));
-        this.result.addEdge(new Edge(rightMid, endArc));
-        
+        this.result.addEdge(new Edge(v, endArc));
         return endArc;
     }
     
