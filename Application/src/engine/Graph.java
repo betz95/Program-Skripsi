@@ -232,10 +232,13 @@ public class Graph {
                     }
                 }
             }
-            if(this.vertices.get(best.getFrom().getNumber()).getDegree()%2==1 && this.vertices.get(best.getTo().getNumber()).getDegree()%2==1){
-                numOfOddVertices -= 2;
-            }
             makeHelpingLine(best);
+            numOfOddVertices = 0;
+            for(int i=0;i<this.vertices.size();i++){
+                if(this.vertices.get(i).getDegree()%2==1){
+                    numOfOddVertices += 1;
+                }
+            }
         }
         return numOfOddVertices;
     }
