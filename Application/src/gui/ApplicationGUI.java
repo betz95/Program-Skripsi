@@ -349,7 +349,7 @@ public class ApplicationGUI extends javax.swing.JFrame {
 
     private void browseButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_browseButtonMousePressed
         fileChooser = new JFileChooser(new File("C:/"));
-        fileChooser.setFileFilter(new FileNameExtensionFilter("HTML files", "html"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("SVG files", "svg"));
         fileChooser.setDialogTitle("Choose SVG File");
         int feedback = fileChooser.showOpenDialog(this);
         final String inputURI = fileChooser.getSelectedFile().getAbsolutePath();
@@ -358,7 +358,7 @@ public class ApplicationGUI extends javax.swing.JFrame {
             svgParser.parseFile();
             graphMaker = new GraphMaker(svgParser.getElements());
             fileChooser = new JFileChooser(new File("C:/"));
-            fileChooser.setFileFilter(new FileNameExtensionFilter("HTML files", "html"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("SVG files", "svg"));
             fileChooser.setDialogTitle("Save Converted File");
             feedback = fileChooser.showSaveDialog(this);
             final String outputURI = fileChooser.getSelectedFile().getAbsolutePath();

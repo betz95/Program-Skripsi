@@ -38,11 +38,7 @@ public class GraphDrawer {
     public void draw() throws IOException{
         if(this.graph != null){
             this.graph.hierholzer();
-            bw.write("<html>");
-            bw.newLine();
-            bw.write("<body>");
-            bw.newLine();
-            bw.write("<svg height=\""+this.svgHeight+"\" width=\""+this.svgWidth+"\" style=\"padding:5;\">");
+            bw.write("<svg height=\""+this.svgHeight+"\" width=\""+this.svgWidth+"\" style=\"padding:5;\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >");
             bw.newLine();
             int numVertices = graph.getVertices().size();
             HashSet<String> hs = new HashSet<String>(); 
@@ -84,11 +80,6 @@ public class GraphDrawer {
                 bw.newLine();
             }
             bw.write("</svg>");
-            bw.newLine();
-            bw.write("</body>");
-            bw.newLine();
-            bw.write("</html>");
-            bw.newLine();
             bw.close();
         }
     }
