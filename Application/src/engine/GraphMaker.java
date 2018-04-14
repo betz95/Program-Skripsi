@@ -97,7 +97,7 @@ public class GraphMaker {
             }
         }
         ArrayList<Edge> removed = new ArrayList<>();
-        for(int i=0;i<pointIntersection.size();i++){
+        for(int i=0;i<pointIntersection.size();i++){    
             makeIntersection(pointIntersection.get(i), edge1Intersection.get(i), edge2Intersection.get(i), removed);
         }
         for(Edge e: removed){
@@ -640,7 +640,7 @@ public class GraphMaker {
         return endArc;
     }
     
-    public double findArcDeltaTheta(Vertex last, PathCommandGroup cmdGroup){
+    private double findArcDeltaTheta(Vertex last, PathCommandGroup cmdGroup){
         double x1 = last.getLocation().x;
         double y1 = last.getLocation().y;
         double x2 = cmdGroup.getLastCoordinate().x;

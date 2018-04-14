@@ -70,7 +70,7 @@ public class GraphDrawer {
                 str += ("<" + cur.getName() + " ");
                 HashMap<String, String> attributes = cur.getAttributes();
                 for(Map.Entry<String, String> entry: attributes.entrySet()){
-                    str += (entry.getKey()+ "=" + "\"" + entry.getValue() +"\"");
+                    str += (entry.getKey()+ "=" + "\"" + entry.getValue() +"\" ");
                 }
                 str += " />";
                 hs.add(str);
