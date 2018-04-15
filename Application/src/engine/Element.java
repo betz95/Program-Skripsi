@@ -60,12 +60,10 @@ public abstract class Element {
     }
     
     public double getHorizontalLength(){
-        System.out.println("Horizontal: "+this.getMaxX()+" "+this.getMinX());
         return this.getMaxX() - this.getMinX();
     }
     
     public double getVerticalLength(){
-        System.out.println("Vertical: "+this.getMaxY()+" "+this.getMinY());
         return this.getMaxY() - this.getMinY();
     }
     
