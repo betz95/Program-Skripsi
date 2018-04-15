@@ -488,7 +488,15 @@ public class GraphMaker {
     private Vertex makePathMoveTo(PathCommandGroup cmdGroup) {
         Vertex beginPath = new Vertex(cmdGroup.coordinates.get(0));
         this.result.addVertex(beginPath);
-        return beginPath;
+        if(cmdGroup.coordinates.size()==2){
+            Vertex endBeginPath = new Vertex(cmdGroup.coordinates.get(1));
+            this.result.addVertex(endBeginPath);
+            this.result.addEdge(new Edge(beginPath, endBeginPath));
+            return endBeginPath;
+        }
+        else{
+            return beginPath;
+        }
     }
 
     private Vertex makePathLineTo(Vertex last, PathCommandGroup cmdGroup) {

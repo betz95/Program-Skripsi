@@ -1,6 +1,7 @@
 package engine;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 /**
  * @author Albert - 2014730007
@@ -20,11 +21,30 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double maxX = Double.MIN_VALUE;
+        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
             if(Character.isAlphabetic(curProcessed.charAt(0))){
                 curCommand = cmd[i];
+                if(curCommand.equals("Q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                }
+                else if(curCommand.equals("q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                }
+                if(curCommand.equals("C")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5]), Double.parseDouble(cmd[i+6])));
+                }
+                else if(curCommand.equals("c")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5])+cumulativeX, Double.parseDouble(cmd[i+6])+cumulativeY));
+                }
                 i++;
             }
             else{
@@ -68,6 +88,72 @@ public class Path extends Element {
                     cumulativeX += currentProcessed3;
                     cumulativeY += currentProcessed4;
                     i+=7;
+                }
+                else if(curCommand.equals("T")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.x>maxX){
+                            maxX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed>maxX)maxX = currentProcessed; 
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed;
+                        cumulativeY = currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("t")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.x>maxX){
+                            maxX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed+cumulativeX>maxX)maxX = currentProcessed+cumulativeX;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("S")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.x>maxX){
+                            maxX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed>maxX)maxX = currentProcessed; 
+                    if(currentProcessed3>maxX)maxX = currentProcessed;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed3;
+                        cumulativeY = currentProcessed4;
+                    }
+                    i+=4;
+                }
+                else if(curCommand.equals("s")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.x>maxX){
+                            maxX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed+cumulativeX>maxX)maxX = currentProcessed+cumulativeX;
+                    if(currentProcessed3+cumulativeX>maxX)maxX = currentProcessed3+cumulativeX;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                    }
+                    i+=4;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
@@ -103,11 +189,30 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double minX = Double.MAX_VALUE;
+        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
             if(Character.isAlphabetic(curProcessed.charAt(0))){
                 curCommand = cmd[i];
+                if(curCommand.equals("Q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                }
+                else if(curCommand.equals("q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                }
+                if(curCommand.equals("C")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5]), Double.parseDouble(cmd[i+6])));
+                }
+                else if(curCommand.equals("c")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5])+cumulativeX, Double.parseDouble(cmd[i+6])+cumulativeY));
+                }
                 i++;
             }
             else{
@@ -151,6 +256,72 @@ public class Path extends Element {
                     cumulativeX += currentProcessed3;
                     cumulativeY += currentProcessed4;
                     i+=7;
+                }
+                else if(curCommand.equals("T")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.x<minX){
+                            minX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed<minX)minX = currentProcessed; 
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed;
+                        cumulativeY = currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("t")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.x<minX){
+                            minX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed+cumulativeX<minX)minX = currentProcessed+cumulativeX;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("S")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.x<minX){
+                            minX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed<minX)minX = currentProcessed; 
+                    if(currentProcessed3<minX)minX = currentProcessed;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed3;
+                        cumulativeY = currentProcessed4;
+                    }
+                    i+=4;
+                }
+                else if(curCommand.equals("s")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.x<minX){
+                            minX = mCP.x;
+                        }
+                    }
+                    if(currentProcessed+cumulativeX<minX)minX = currentProcessed+cumulativeX;
+                    if(currentProcessed3+cumulativeX<minX)minX = currentProcessed3+cumulativeX;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                    }
+                    i+=4;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
@@ -186,11 +357,30 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double maxY = Double.MIN_VALUE;
+        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
             if(Character.isAlphabetic(curProcessed.charAt(0))){
                 curCommand = cmd[i];
+                if(curCommand.equals("Q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                }
+                else if(curCommand.equals("q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                }
+                if(curCommand.equals("C")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5]), Double.parseDouble(cmd[i+6])));
+                }
+                else if(curCommand.equals("c")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5])+cumulativeX, Double.parseDouble(cmd[i+6])+cumulativeY));
+                }
                 i++;
             }
             else{
@@ -234,6 +424,72 @@ public class Path extends Element {
                     cumulativeX += currentProcessed3;
                     cumulativeY += currentProcessed4;
                     i+=7;
+                }
+                else if(curCommand.equals("T")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.y>maxY){
+                            maxY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2>maxY)maxY = currentProcessed2; 
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed;
+                        cumulativeY = currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("t")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.y>maxY){
+                            maxY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2+cumulativeY>maxY)maxY = currentProcessed2+cumulativeY;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("S")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.y>maxY){
+                            maxY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2>maxY)maxY = currentProcessed2; 
+                    if(currentProcessed4>maxY)maxY = currentProcessed4;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed3;
+                        cumulativeY = currentProcessed4;
+                    }
+                    i+=4;
+                }
+                else if(curCommand.equals("s")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.y>maxY){
+                            maxY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2+cumulativeY>maxY)maxY = currentProcessed2+cumulativeY;
+                    if(currentProcessed4+cumulativeY>maxY)maxY = currentProcessed4+cumulativeY;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                    }
+                    i+=4;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
@@ -269,11 +525,30 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double minY = Double.MAX_VALUE;
+        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
             if(Character.isAlphabetic(curProcessed.charAt(0))){
                 curCommand = cmd[i];
+                if(curCommand.equals("Q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                }
+                else if(curCommand.equals("q")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                }
+                if(curCommand.equals("C")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1]), Double.parseDouble(cmd[i+2])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3]), Double.parseDouble(cmd[i+4])));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5]), Double.parseDouble(cmd[i+6])));
+                }
+                else if(curCommand.equals("c")){
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+1])+cumulativeX, Double.parseDouble(cmd[i+2])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+3])+cumulativeX, Double.parseDouble(cmd[i+4])+cumulativeY));
+                    shorthandCurveToHelper.add(new Point2D.Double(Double.parseDouble(cmd[i+5])+cumulativeX, Double.parseDouble(cmd[i+6])+cumulativeY));
+                }
                 i++;
             }
             else{
@@ -317,6 +592,72 @@ public class Path extends Element {
                     cumulativeX += currentProcessed3;
                     cumulativeY += currentProcessed4;
                     i+=7;
+                }
+                else if(curCommand.equals("T")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.y<minY){
+                            minY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2<minY)minY = currentProcessed2; 
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed;
+                        cumulativeY = currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("t")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(0), shorthandCurveToHelper.get(1));
+                        if(mCP.y<minY){
+                            minY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2+cumulativeY<minY)minY = currentProcessed2+cumulativeY;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed;
+                        cumulativeY += currentProcessed2;
+                    }
+                    i+=2;
+                }
+                else if(curCommand.equals("S")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.y<minY){
+                            minY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2<minY)minY = currentProcessed2; 
+                    if(currentProcessed4<minY)minY = currentProcessed4;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX = currentProcessed3;
+                        cumulativeY = currentProcessed4;
+                    }
+                    i+=4;
+                }
+                else if(curCommand.equals("s")){
+                    double currentProcessed2 = Double.parseDouble(cmd[i+1]);
+                    double currentProcessed3 = Double.parseDouble(cmd[i+2]);
+                    double currentProcessed4 = Double.parseDouble(cmd[i+3]);
+                    if(shorthandCurveToHelper.size()>0){
+                        Point2D.Double mCP = this.mirrorControlPoint(shorthandCurveToHelper.get(1), shorthandCurveToHelper.get(2));
+                        if(mCP.y<minY){
+                            minY = mCP.y;
+                        }
+                    }
+                    if(currentProcessed2+cumulativeY<minY)minY = currentProcessed2+cumulativeY;
+                    if(currentProcessed4+cumulativeY<minY)minY = currentProcessed4+cumulativeY;
+                    if(i >= cmdLen-2 || Character.isAlphabetic(cmd[i+2].charAt(0))){
+                        cumulativeX += currentProcessed3;
+                        cumulativeY += currentProcessed4;
+                    }
+                    i+=4;
                 }
                 else{
                     double currentProcessed2 = Double.parseDouble(cmd[i+1]);
@@ -411,5 +752,12 @@ public class Path extends Element {
         r[0][0] = rx;
         r[1][0] = ry;
         return new Matrix(r);
+    }
+    
+    private Point2D.Double mirrorControlPoint(Point2D.Double prevCtrlPoint, Point2D.Double curStart) {
+        Point2D.Double res = new Point2D.Double();
+        res.x = curStart.x - (prevCtrlPoint.x - curStart.x);
+        res.y = curStart.y - (prevCtrlPoint.y - curStart.y);
+        return res;
     }
 }
