@@ -42,6 +42,7 @@ public class Graph {
     /** Hierholzer's Algorithm Implementation**/
     public void hierholzer(){
         int res = this.makeEuler(); //res = 0 able to make euler circuit, res = 2 able to make euler path
+        printAdjList();
         ArrayList<Integer> eulerPath = new ArrayList<>();
         int start = -1;
         if(res==2){
@@ -323,6 +324,7 @@ public class Graph {
     private void printAdjList() {
         for(int i=0;i<adjList.size();i++){
             Vertex vi = this.vertices.get(i);
+            if(vi.getDegree()==0)continue;
             System.out.println("Vertex "+vi.getNumber()+" Has Degree "+vi.getDegree()+" Located At "+vi.getLocation());
             System.out.println("Neighbour of Vertex "+vi.getNumber());
             for(int j=0;j<adjList.get(i).size();j++){

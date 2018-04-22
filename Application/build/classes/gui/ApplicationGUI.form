@@ -307,7 +307,9 @@
                     <Property name="lineWrap" type="boolean" value="true"/>
                     <Property name="rows" type="int" value="5"/>
                     <Property name="text" type="java.lang.String" value="Program ini digunakan untuk membuat soal permainan menghubungkan titik. Masukan program berupa file SVG dan keluaran program berupa file HTML. Pembuatan soal dapat dilakukan pada panel Generate Problem. Klik Generate Problem pada navigasi untuk berpindah ke panel Generate Problem.&#xa;&#xa;Klik tombol Browse pada panel Generate Problem untuk menentukan file masukan. Setelah itu, program akan meminta lokasi penyimpanan dan nama file yang akan disimpan. Pratinjau file masukan dan keluaran akan ditampilkan pada panel Generate Problem."/>
-                    <Property name="toolTipText" type="java.lang.String" value=""/>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="null" type="code"/>
+                    </Property>
                     <Property name="wrapStyleWord" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -448,6 +450,9 @@
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
                 <Component class="javax.swing.JEditorPane" name="inputPane">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -459,6 +464,9 @@
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
                 <Component class="javax.swing.JEditorPane" name="outputPane">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

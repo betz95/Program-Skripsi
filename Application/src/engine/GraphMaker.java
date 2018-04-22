@@ -3,6 +3,7 @@ package engine;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -48,64 +49,61 @@ public class GraphMaker {
     }
 
     private void handleIntersections() {
-        ArrayList<Point2D.Double> pointIntersection = new ArrayList<>();
-        ArrayList<Edge> edge1Intersection = new ArrayList<>();
-        ArrayList<Edge> edge2Intersection = new ArrayList<>();
-        for(int i=0;i<result.getEdges().size();i++){
-            Edge e1 = result.getEdges().get(i);
-            Line2D.Double l1 = new Line2D.Double(e1.getFrom().getLocation(), e1.getTo().getLocation()); //vertical line has undefined slope
-            double x1E1 = e1.getFrom().getLocation().x;
-            double y1E1 = e1.getFrom().getLocation().y;
-            double x2E1 = e1.getTo().getLocation().x;
-            double y2E1 = e1.getTo().getLocation().y;
-            double m1 = (y2E1 - y1E1)/(x2E1 - x1E1);
-            double equationE1[] = {m1, (m1 * x1E1 - y1E1)*-1}; //[0] = x, [1] = constant
-            boolean isVerticalLineE1 = false;
-            if(x1E1==x2E1)isVerticalLineE1 = true;
-            for(int j=i+1;j<result.getEdges().size();j++){
-                Edge e2 = result.getEdges().get(j);
-                Line2D.Double l2 = new Line2D.Double(e2.getFrom().getLocation(), e2.getTo().getLocation()); //vertical line has undefined slope
-                if(l1.intersectsLine(l2)){
-                    double x1E2 = e2.getFrom().getLocation().x;
-                    double y1E2 = e2.getFrom().getLocation().y;
-                    double x2E2 = e2.getTo().getLocation().x;
-                    double y2E2 = e2.getTo().getLocation().y;
-                    double m2 = (y2E2 - y1E2)/(x2E2 - x1E2);
-                    double equationE2[] = {m2, (m2 * x1E2 - y1E2)*-1}; //[0] = x, [1] = constant
-                    boolean isVerticalLineE2 = false;
-                    if(x1E2==x2E2)isVerticalLineE2 = true;
-                    double x = 0;
-                    double y = 0;
-                    if(isVerticalLineE1){
-                        x = x1E1;
-                        y = equationE2[0] * x + (equationE2[1]);
-                    }
-                    else if(isVerticalLineE2){
-                        x = x1E2;
-                        y = equationE1[0] * x + (equationE1[1]);
-                    }
-                    else{
-                        x = (equationE1[1]-equationE2[1])/(equationE2[0]-equationE1[0]);
-                        y = equationE1[0] * x + (equationE1[1]);
-                    }
-                    if(!Double.isNaN(x) && !Double.isNaN(y)){
-                        pointIntersection.add(new Point2D.Double(x, y));
-                        edge1Intersection.add(e1);
-                        edge2Intersection.add(e2);
+        HashSet<Point2D.Double> pointIntersection = new HashSet<>();
+        boolean intersectionFound = true;
+        while(intersectionFound){
+            intersectionFound = false;
+            for(int i=0;i<result.getEdges().size();i++){
+                Edge e1 = result.getEdges().get(i);
+                Line2D.Double l1 = new Line2D.Double(e1.getFrom().getLocation(), e1.getTo().getLocation()); //vertical line has undefined slope
+                double x1E1 = e1.getFrom().getLocation().x;
+                double y1E1 = e1.getFrom().getLocation().y;
+                double x2E1 = e1.getTo().getLocation().x;
+                double y2E1 = e1.getTo().getLocation().y;
+                double m1 = (y2E1 - y1E1)/(x2E1 - x1E1);
+                double equationE1[] = {m1, (m1 * x1E1 - y1E1)*-1}; //[0] = x, [1] = constant
+                boolean isVerticalLineE1 = false;
+                if(x1E1==x2E1)isVerticalLineE1 = true;
+                for(int j=i+1;j<result.getEdges().size();j++){
+                    Edge e2 = result.getEdges().get(j);
+                    Line2D.Double l2 = new Line2D.Double(e2.getFrom().getLocation(), e2.getTo().getLocation()); //vertical line has undefined slope
+                    if(l1.intersectsLine(l2)){
+                        double x1E2 = e2.getFrom().getLocation().x;
+                        double y1E2 = e2.getFrom().getLocation().y;
+                        double x2E2 = e2.getTo().getLocation().x;
+                        double y2E2 = e2.getTo().getLocation().y;
+                        double m2 = (y2E2 - y1E2)/(x2E2 - x1E2);
+                        double equationE2[] = {m2, (m2 * x1E2 - y1E2)*-1}; //[0] = x, [1] = constant
+                        boolean isVerticalLineE2 = false;
+                        if(x1E2==x2E2)isVerticalLineE2 = true;
+                        double x = 0;
+                        double y = 0;
+                        if(isVerticalLineE1){
+                            x = x1E1;
+                            y = equationE2[0] * x + (equationE2[1]);
+                        }
+                        else if(isVerticalLineE2){
+                            x = x1E2;
+                            y = equationE1[0] * x + (equationE1[1]);
+                        }
+                        else{
+                            x = (equationE1[1]-equationE2[1])/(equationE2[0]-equationE1[0]);
+                            y = equationE1[0] * x + (equationE1[1]);
+                        }
+                        Point2D.Double intersection = new Point2D.Double(x, y);
+                        if(!Double.isNaN(x) && !Double.isNaN(y) && !pointIntersection.contains(intersection)){
+                            pointIntersection.add(intersection);
+                            makeIntersection(intersection, e1, e2);
+                            intersectionFound = true;
+                            break;
+                        }
                     }
                 }
             }
         }
-        ArrayList<Edge> removed = new ArrayList<>();
-        for(int i=0;i<pointIntersection.size();i++){    
-            makeIntersection(pointIntersection.get(i), edge1Intersection.get(i), edge2Intersection.get(i), removed);
-        }
-        for(Edge e: removed){
-            result.removeEdge(e);
-        }
     }
     
-    private void makeIntersection(Point2D.Double p, Edge e1, Edge e2, ArrayList<Edge> removed){
+    private void makeIntersection(Point2D.Double p, Edge e1, Edge e2){
         double x = p.x;
         double y = p.y;
         Vertex newVertex = new Vertex(new Point2D.Double(x, y));
@@ -116,10 +114,10 @@ public class GraphMaker {
             result.addVertex(newVertex);
         }
         if(result.addEdge(new Edge(e1.getFrom(), newVertex)) && result.addEdge(new Edge(newVertex, e1.getTo()))){
-            removed.add(e1);
+            result.removeEdge(e1);
         }
         if(result.addEdge(new Edge(e2.getFrom(), newVertex)) && result.addEdge(new Edge(newVertex, e2.getTo()))){
-            removed.add(e2);
+            result.removeEdge(e2);
         }
     }
     

@@ -192,7 +192,7 @@ public class ApplicationGUI extends javax.swing.JFrame {
         textAreaPetunjuk.setLineWrap(true);
         textAreaPetunjuk.setRows(5);
         textAreaPetunjuk.setText("Program ini digunakan untuk membuat soal permainan menghubungkan titik. Masukan program berupa file SVG dan keluaran program berupa file HTML. Pembuatan soal dapat dilakukan pada panel Generate Problem. Klik Generate Problem pada navigasi untuk berpindah ke panel Generate Problem.\n\nKlik tombol Browse pada panel Generate Problem untuk menentukan file masukan. Setelah itu, program akan meminta lokasi penyimpanan dan nama file yang akan disimpan. Pratinjau file masukan dan keluaran akan ditampilkan pada panel Generate Problem.");
-        textAreaPetunjuk.setToolTipText("");
+        textAreaPetunjuk.setToolTipText(null);
         textAreaPetunjuk.setWrapStyleWord(true);
         jScrollPane2.setViewportView(textAreaPetunjuk);
 
@@ -260,8 +260,10 @@ public class ApplicationGUI extends javax.swing.JFrame {
         outputLabel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         outputLabel.setText("Output:");
 
+        inputPane.setEditable(false);
         jScrollPane1.setViewportView(inputPane);
 
+        outputPane.setEditable(false);
         jScrollPane5.setViewportView(outputPane);
 
         javax.swing.GroupLayout generateProblemContentLayout = new javax.swing.GroupLayout(generateProblemContent);
