@@ -49,8 +49,9 @@ public class GraphMaker {
     }
 
     private void handleIntersections() {
-        HashSet<Point2D.Double> pointIntersection = new HashSet<>();
+        HashSet<String> pointIntersection = new HashSet<>();
         boolean intersectionFound = true;
+        String stringIntersection = "";
         while(intersectionFound){
             intersectionFound = false;
             for(int i=0;i<result.getEdges().size();i++){
@@ -91,8 +92,9 @@ public class GraphMaker {
                             y = equationE1[0] * x + (equationE1[1]);
                         }
                         Point2D.Double intersection = new Point2D.Double(x, y);
-                        if(!Double.isNaN(x) && !Double.isNaN(y) && !pointIntersection.contains(intersection)){
-                            pointIntersection.add(intersection);
+                        stringIntersection = e1.toString()+" - "+e2.toString();
+                        if(!Double.isNaN(x) && !Double.isNaN(y) && !pointIntersection.contains(stringIntersection)){
+                            pointIntersection.add(stringIntersection);
                             makeIntersection(intersection, e1, e2);
                             intersectionFound = true;
                             break;

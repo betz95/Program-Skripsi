@@ -42,7 +42,6 @@ public class Graph {
     /** Hierholzer's Algorithm Implementation**/
     public void hierholzer(){
         int res = this.makeEuler(); //res = 0 able to make euler circuit, res = 2 able to make euler path
-        printAdjList();
         ArrayList<Integer> eulerPath = new ArrayList<>();
         int start = -1;
         if(res==2){

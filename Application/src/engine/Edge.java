@@ -51,4 +51,8 @@ public class Edge {
         }
         else return false;
     }
+    
+    public String toString(){
+        return this.from.getLocation()+" "+this.to.getLocation();
+    }
 }
