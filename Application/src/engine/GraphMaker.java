@@ -61,19 +61,22 @@ public class GraphMaker {
                 double y1E1 = e1.getFrom().getLocation().y;
                 double x2E1 = e1.getTo().getLocation().x;
                 double y2E1 = e1.getTo().getLocation().y;
-                double m1 = (y2E1 - y1E1)/(x2E1 - x1E1);
+                Double m1 = (y2E1 - y1E1)/(x2E1 - x1E1);
                 double equationE1[] = {m1, (m1 * x1E1 - y1E1)*-1}; //[0] = x, [1] = constant
                 boolean isVerticalLineE1 = false;
                 if(x1E1==x2E1)isVerticalLineE1 = true;
                 for(int j=i+1;j<result.getEdges().size();j++){
                     Edge e2 = result.getEdges().get(j);
+                    if(e1.getFrom().equals(e2.getFrom()) || e1.getFrom().equals(e2.getTo()) || e1.getTo().equals(e2.getFrom()) || e1.getTo().equals(e2.getTo())){
+                        continue;
+                    }
                     Line2D.Double l2 = new Line2D.Double(e2.getFrom().getLocation(), e2.getTo().getLocation()); //vertical line has undefined slope
                     if(l1.intersectsLine(l2)){
                         double x1E2 = e2.getFrom().getLocation().x;
                         double y1E2 = e2.getFrom().getLocation().y;
                         double x2E2 = e2.getTo().getLocation().x;
                         double y2E2 = e2.getTo().getLocation().y;
-                        double m2 = (y2E2 - y1E2)/(x2E2 - x1E2);
+                        Double m2 = (y2E2 - y1E2)/(x2E2 - x1E2);
                         double equationE2[] = {m2, (m2 * x1E2 - y1E2)*-1}; //[0] = x, [1] = constant
                         boolean isVerticalLineE2 = false;
                         if(x1E2==x2E2)isVerticalLineE2 = true;
@@ -91,6 +94,11 @@ public class GraphMaker {
                             x = (equationE1[1]-equationE2[1])/(equationE2[0]-equationE1[0]);
                             y = equationE1[0] * x + (equationE1[1]);
                         }
+                        if(m1.equals(m2)){
+                            continue;
+                        }
+                        x = Math.round(x*100.0)/100.0;
+                        y = Math.round(y*100.0)/100.0;
                         Point2D.Double intersection = new Point2D.Double(x, y);
                         stringIntersection = e1.toString()+" - "+e2.toString();
                         if(!Double.isNaN(x) && !Double.isNaN(y) && !pointIntersection.contains(stringIntersection)){
@@ -101,6 +109,7 @@ public class GraphMaker {
                         }
                     }
                 }
+                if(intersectionFound)break;
             }
         }
     }
