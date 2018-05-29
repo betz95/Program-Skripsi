@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Albert - 2014730007
@@ -21,7 +22,7 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double maxX = Double.MIN_VALUE;
-        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
+        List<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
@@ -189,7 +190,7 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double minX = Double.MAX_VALUE;
-        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
+        List<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
@@ -357,7 +358,7 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double maxY = Double.MIN_VALUE;
-        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
+        List<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];
@@ -525,7 +526,7 @@ public class Path extends Element {
         double cumulativeY = 0;
         int i = 0;
         double minY = Double.MAX_VALUE;
-        ArrayList<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
+        List<Point2D.Double> shorthandCurveToHelper = new ArrayList<Point2D.Double>(); 
         
         while(i<cmdLen){
             curProcessed = cmd[i];

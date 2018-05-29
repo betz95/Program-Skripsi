@@ -1,13 +1,14 @@
 package engine;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Albert - 2014730007
  */
 public abstract class Element {
     protected String name;
-    protected HashMap<String, String> attributes;
+    protected Map<String, String> attributes;
     
     public Element(String name, String attributes) {
         this.name = name;
@@ -55,7 +56,7 @@ public abstract class Element {
         this.name = name;
     }
 
-    public HashMap<String, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
     

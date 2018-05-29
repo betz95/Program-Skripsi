@@ -4,16 +4,18 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Albert - 2014730007
  */
 public class GraphMaker {
     private Graph result;
-    private ArrayList<Element> elements;
+    private List<Element> elements;
     
-    public GraphMaker(ArrayList<Element> elements){
+    public GraphMaker(List<Element> elements){
         this.elements = elements;
     }
 
@@ -49,7 +51,7 @@ public class GraphMaker {
     }
 
     private void handleIntersections() {
-        HashSet<String> pointIntersection = new HashSet<>();
+        Set<String> pointIntersection = new HashSet<>();
         boolean intersectionFound = true;
         String stringIntersection = "";
         while(intersectionFound){
@@ -229,7 +231,7 @@ public class GraphMaker {
     }
 
     private void makePolygon(Element cur) {
-        ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+        List<Point2D.Double> points = new ArrayList<Point2D.Double>();
         String found = cur.getAttributes().get("points");
         if(found!= null){
             String inputs[] = found.split("\\s+");
@@ -289,7 +291,7 @@ public class GraphMaker {
     }
 
     private void makePolyline(Element cur) {
-        ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+        List<Point2D.Double> points = new ArrayList<Point2D.Double>();
         String found = cur.getAttributes().get("points");
         if(found!= null){
             String inputs[] = found.split("\\s+");
@@ -372,7 +374,7 @@ public class GraphMaker {
         if(found != null){
             cmd = found.split("\\s+");
             int cmdLen = cmd.length;
-            ArrayList<PathCommandGroup> groups = new ArrayList<PathCommandGroup>();
+            List<PathCommandGroup> groups = new ArrayList<PathCommandGroup>();
             double cumulativeX = 0;
             double cumulativeY = 0;
             String curCommand = "";
@@ -862,7 +864,7 @@ public class GraphMaker {
     
     class PathCommandGroup{
         private String command;
-        private ArrayList<Point2D.Double> coordinates;
+        private List<Point2D.Double> coordinates;
         private double degree;
         private int larArcFlag;
         private int sweepFlag;
@@ -919,11 +921,11 @@ public class GraphMaker {
             return command;
         }
 
-        public ArrayList<Point2D.Double> getCoordinates() {
+        public List<Point2D.Double> getCoordinates() {
             return coordinates;
         }
 
-        public void setCoordinates(ArrayList<Point2D.Double> coordinates) {
+        public void setCoordinates(List<Point2D.Double> coordinates) {
             this.coordinates = coordinates;
         }
 

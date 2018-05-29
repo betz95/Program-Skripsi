@@ -2,6 +2,7 @@ package engine;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Albert - 2014730007
@@ -12,7 +13,7 @@ public class Vertex {
     private int number;
     private Point2D.Double location;
     private int degree;
-    private ArrayList<Integer> displayNumbers;
+    private List<Integer> displayNumbers;
     
     public Vertex(int number, Point2D.Double location){
         this.number = number;
@@ -26,7 +27,7 @@ public class Vertex {
         this.displayNumbers = new ArrayList<>();
     }
 
-    public ArrayList<Integer> getDisplayNumbers() {
+    public List<Integer> getDisplayNumbers() {
         return displayNumbers;
     }
     

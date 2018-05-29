@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Albert - 2014730007
@@ -15,8 +16,8 @@ public class SVGParser {
     
     private File svgFile;
     private BufferedReader br;
-    private ArrayList<Element> elements;
-    private ArrayList<Element> unprocessedElements;
+    private List<Element> elements;
+    private List<Element> unprocessedElements;
     private double svgWidth;
     private double svgHeight;
 
@@ -247,11 +248,11 @@ public class SVGParser {
         this.svgHeight = svgHeight;
     }
 
-    public ArrayList<Element> getElements() {
+    public List<Element> getElements() {
         return elements;
     }
 
-    public ArrayList<Element> getUnprocessedElements() {
+    public List<Element> getUnprocessedElements() {
         return unprocessedElements;
     }
     

@@ -3,19 +3,20 @@ package engine;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Albert - 2014730007
  */
 public class Graph {
-    private ArrayList<Vertex> vertices;
-    private ArrayList<Edge> edges;
-    private ArrayList<ArrayList<Vertex>> adjList;
+    private List<Vertex> vertices;
+    private List<Edge> edges;
+    private List<List<Vertex>> adjList;
     
     public Graph(){
         this.vertices = new ArrayList<Vertex>();
         this.edges = new ArrayList<Edge>();
-        this.adjList = new ArrayList<ArrayList<Vertex>>();
+        this.adjList = new ArrayList<List<Vertex>>();
     }
     
     /** Represents visited edge **/
@@ -24,8 +25,8 @@ public class Graph {
         private boolean second;
     }
         
-    public ArrayList<Node>[] copyGraph(){
-        ArrayList<Node> graph[] = new ArrayList[this.vertices.size()];
+    public List<Node>[] copyGraph(){
+        List<Node> graph[] = new ArrayList[this.vertices.size()];
         for(int i=0;i<adjList.size();i++){
             graph[i] = new ArrayList<>();
             for(int j=0;j<adjList.get(i).size();j++){
@@ -42,7 +43,7 @@ public class Graph {
     /** Hierholzer's Algorithm Implementation**/
     public void hierholzer(){
         int res = this.makeEuler(); //res = 0 able to make euler circuit, res = 2 able to make euler path
-        ArrayList<Integer> eulerPath = new ArrayList<>();
+        List<Integer> eulerPath = new ArrayList<>();
         int start = -1;
         if(res==2){
             for(int i=0;i<vertices.size();i++){
@@ -55,7 +56,7 @@ public class Graph {
         else{
             start = 0;
         }
-        ArrayList<Node>[] graph = copyGraph();
+        List<Node>[] graph = copyGraph();
         doHierholzer(graph, start, eulerPath);
         eulerPath.add(start);
         if(eulerPath.size()>1){
@@ -65,7 +66,7 @@ public class Graph {
         }
     }
     
-    private void doHierholzer(ArrayList<Node>[] graph, int u, ArrayList<Integer> eulerPath) {
+    private void doHierholzer(List<Node>[] graph, int u, List<Integer> eulerPath) {
         if(graph.length==0)return ;
         for(int i=0;i<graph[u].size();i++){
             Node neigh = graph[u].get(i);
@@ -133,7 +134,7 @@ public class Graph {
         }
     }
     
-    public ArrayList<Vertex> getVertices() {
+    public List<Vertex> getVertices() {
         return vertices;
     }
 
@@ -141,7 +142,7 @@ public class Graph {
         this.vertices = vertices;
     }
 
-    public ArrayList<Edge> getEdges() {
+    public List<Edge> getEdges() {
         return edges;
     }
 
@@ -149,11 +150,11 @@ public class Graph {
         this.edges = edges;
     }
     
-    public ArrayList<ArrayList<Vertex>> getAdjList(){
+    public List<List<Vertex>> getAdjList(){
         return this.adjList;
     }
     
-    private void dfsRemove(ArrayList<Node>[] adjList, Vertex u, ArrayList<Edge> smallerArea){
+    private void dfsRemove(List<Node>[] adjList, Vertex u, List<Edge> smallerArea){
         int cur = u.getNumber();
         for(int i=0;i<adjList[cur].size();i++){
             Node v = adjList[cur].get(i);
@@ -174,8 +175,8 @@ public class Graph {
         int area1 = dfsCount(e.getFrom().getNumber(), visited);
         visited = new boolean[this.vertices.size()];
         int area2 = dfsCount(e.getTo().getNumber(), visited);
-        ArrayList<Edge> smallerArea = new ArrayList<>();
-        ArrayList<Node>[] graph = copyGraph();
+        List<Edge> smallerArea = new ArrayList<>();
+        List<Node>[] graph = copyGraph();
         if(area1>=area2){
             dfsRemove(graph, e.getTo(), smallerArea);
         }

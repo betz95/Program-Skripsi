@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Albert - 2014730007
@@ -17,11 +19,11 @@ public class GraphDrawer {
     private Graph graph;
     private File destFile;
     private BufferedWriter bw;
-    private ArrayList<Element> unprocessedElements;
+    private List<Element> unprocessedElements;
     private double svgWidth;
     private double svgHeight;
     
-    public GraphDrawer(Graph graph, ArrayList<Element> unprocessedElements, File destFile, double svgWidth, double svgHeight){
+    public GraphDrawer(Graph graph, List<Element> unprocessedElements, File destFile, double svgWidth, double svgHeight){
         this.unprocessedElements = unprocessedElements;
         this.graph = graph;
         this.destFile = destFile;
@@ -41,7 +43,7 @@ public class GraphDrawer {
             bw.write("<svg height=\""+this.svgHeight+"\" width=\""+this.svgWidth+"\" style=\"padding:5;\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >");
             bw.newLine();
             int numVertices = graph.getVertices().size();
-            HashSet<String> hs = new HashSet<String>(); 
+            Set<String> hs = new HashSet<String>(); 
             for(Vertex cur: graph.getVertices()){
                 if(cur.getDisplayNumbers().size()!=0){
                     String numbers = "";
@@ -68,7 +70,7 @@ public class GraphDrawer {
                 Element cur = unprocessedElements.get(i);
                 String str = "";
                 str += ("<" + cur.getName() + " ");
-                HashMap<String, String> attributes = cur.getAttributes();
+                Map<String, String> attributes = cur.getAttributes();
                 for(Map.Entry<String, String> entry: attributes.entrySet()){
                     str += (entry.getKey()+ "=" + "\"" + entry.getValue() +"\" ");
                 }
