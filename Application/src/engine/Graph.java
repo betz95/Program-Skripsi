@@ -172,9 +172,9 @@ public class Graph {
     
     private void chooseLargerArea(Edge e){
         boolean visited[] = new boolean[this.vertices.size()];
-        int area1 = dfsCount(e.getFrom().getNumber(), visited);
+        int area1 = dfsCountEdge(e.getFrom().getNumber(), visited);
         visited = new boolean[this.vertices.size()];
-        int area2 = dfsCount(e.getTo().getNumber(), visited);
+        int area2 = dfsCountEdge(e.getTo().getNumber(), visited);
         List<Edge> smallerArea = new ArrayList<>();
         List<Node>[] graph = copyGraph();
         if(area1>=area2){
@@ -291,13 +291,25 @@ public class Graph {
         }
     }
 
-    private int dfsCount(int cur, boolean visited[]){
+    private int dfsCountEdge(int cur, boolean visited[]){
+        visited[cur] = true;
+        int count = adjList.get(cur).size();
+        for(int i=0;i<adjList.get(cur).size();i++){
+            Vertex v = adjList.get(cur).get(i);
+            if(!visited[v.getNumber()]){
+                count += dfsCountEdge(v.getNumber(), visited);
+            }
+        }
+        return count/2;
+    }
+    
+    private int dfsCountVertex(int cur, boolean visited[]){
         visited[cur] = true;
         int count = 1;
         for(int i=0;i<adjList.get(cur).size();i++){
             Vertex v = adjList.get(cur).get(i);
             if(!visited[v.getNumber()]){
-                count += dfsCount(v.getNumber(), visited);
+                count += dfsCountVertex(v.getNumber(), visited);
             }
         }
         return count;
@@ -305,18 +317,22 @@ public class Graph {
     
     private int checkBridge(Edge e) {
         boolean visited[] = new boolean[this.vertices.size()];
-        int before = dfsCount(e.getFrom().getNumber(), visited);
+        int before = dfsCountVertex(e.getFrom().getNumber(), visited);
         this.adjList.get(e.getFrom().getNumber()).remove(e.getTo());
         this.adjList.get(e.getTo().getNumber()).remove(e.getFrom());
         visited = new boolean[this.vertices.size()];
-        int after = dfsCount(e.getFrom().getNumber(), visited);
+        int after = dfsCountVertex(e.getFrom().getNumber(), visited);
+        visited = new boolean[this.vertices.size()];
+        int countArea1 = dfsCountEdge(e.getFrom().getNumber(), visited);
+        visited = new boolean[this.vertices.size()];
+        int countArea2 = dfsCountEdge(e.getTo().getNumber(), visited);
         this.adjList.get(e.getFrom().getNumber()).add(e.getTo());
         this.adjList.get(e.getTo().getNumber()).add(e.getFrom());
         if(before==after){
             return -1;
         }
         else{
-            return (after>before)? after: before;
+            return (countArea1>countArea2)? countArea1: countArea2;
         }
     }
 
